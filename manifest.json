@@ -1,0 +1,10 @@
+{
+  "name": "Uygulamam",
+  "short_name": "Uygulamam",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": []
+}
