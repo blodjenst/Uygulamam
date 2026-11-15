@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F1F3F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1020" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ne Açsam">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Ne Açsam</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+  html { color-scheme: light dark; }
+  body { margin: 0; }
+  /* Düzen: sola yaslı tek sütun. Cesur an: üç doygun kategori kutusu. Gerisi sessiz. */
+  :root {
+    --bg: #F1F3F8;
+    --surface: #FFFFFF;
+    --fg: #13172B;
+    --muted: #586080;
+    --line: #D8DCE9;
+    --accent: #2B3FE0;
+    --on-accent: #FFFFFF;
+    --oyun: #12805A;
+    --oyun-ink: #FFFFFF;
+    --muzik: #F0B33A;
+    --muzik-ink: #1B1606;
+    --film: #C73B3B;
+    --film-ink: #FFFFFF;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0D1020;
+      --surface: #161A30;
+      --fg: #EDEFF9;
+      --muted: #A3AAC6;
+      --line: #2A2F4F;
+      --accent: #8A98FF;
+      --on-accent: #0D1020;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0D1020;
+    --surface: #161A30;
+    --fg: #EDEFF9;
+    --muted: #A3AAC6;
+    --line: #2A2F4F;
+    --accent: #8A98FF;
+    --on-accent: #0D1020;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    padding-block: 20px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  [tabindex="-1"]:focus { outline: none; }
+
+  /* Üst şerit */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 28px; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: none; border: 0; padding: 4px 0;
+    font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em;
+  }
+  .dots { display: inline-flex; gap: 3px; }
+  .dots i { width: 9px; height: 9px; border-radius: 2px; display: block; }
+  .dots i:nth-child(1) { background: var(--oyun); }
+  .dots i:nth-child(2) { background: var(--muzik); }
+  .dots i:nth-child(3) { background: var(--film); }
+
+  /* Açılış */
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 11vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+  h1 span { color: var(--accent); }
+  .lead { font-size: 1.15rem; max-width: 34ch; margin: 0 0 32px; color: var(--muted); }
+
+  .cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .cat {
+    display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
+    min-height: 200px; padding: 20px; border: 0; border-radius: 16px; text-align: left;
+    background: var(--c); color: var(--ink);
+    transition: transform .15s ease;
+  }
+  .cat:hover { transform: translateY(-3px); }
+  .cat.oyun { --c: var(--oyun); --ink: var(--oyun-ink); }
+  .cat.muzik { --c: var(--muzik); --ink: var(--muzik-ink); }
+  .cat.film { --c: var(--film); --ink: var(--film-ink); }
+  .cat .name { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; display: block; }
+  .cat .sub { display: block; margin-top: 8px; font-size: 1rem; opacity: .92; }
+  .cat .foot { display: flex; justify-content: space-between; align-items: baseline; font-size: .9rem; font-weight: 600; }
+  .cat .arrow { font-size: 1.4rem; line-height: 1; }
+  .note { margin: 28px 0 0; font-size: .9rem; color: var(--muted); max-width: 60ch; }
+
+  /* Sorular */
+  .qhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .back { background: none; border: 0; padding: 6px 0; color: var(--muted); font-weight: 500; }
+  .back:hover { color: var(--fg); }
+  .tag { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 600; }
+  .tag i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); display: block; }
+  .progress { display: flex; gap: 6px; margin-bottom: 36px; }
+  .seg { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .seg.done { background: var(--fg); }
+  .seg.now { background: var(--accent); }
+  .count { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  h2 {
+    font-family: var(--font-display); font-weight: 650;
+    font-size: clamp(1.9rem, 6vw, 2.9rem); line-height: 1.08; letter-spacing: -0.025em;
+    margin: 0 0 28px; text-wrap: balance; max-width: 18ch;
+  }
+  .opts { display: grid; gap: 10px; max-width: 640px; }
+  .opt {
+    display: flex; align-items: center; gap: 14px; width: 100%;
+    padding: 16px 18px; text-align: left; font-size: 1.05rem;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    transition: border-color .12s ease, transform .12s ease;
+  }
+  .opt:hover { border-color: var(--accent); transform: translateX(3px); }
+  .opt.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .key {
+    flex: none; width: 28px; height: 28px; display: grid; place-items: center;
+    border-radius: 6px; background: var(--bg); border: 1px solid var(--line);
+    font-size: .8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .rise { animation: rise .25s ease-out; }
+  @keyframes rise { from { transform: translateY(8px); } to { transform: none; } }
+
+  /* Soru sayısı */
+  .counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; max-width: 640px; }
+  .cnt {
+    display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    transition: border-color .12s ease, transform .12s ease;
+  }
+  .cnt:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .cnt b { font-family: var(--font-display); font-size: 2.2rem; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .cnt span { font-size: .85rem; color: var(--muted); }
+
+  /* Sonuçlar */
+  .rhead h2 { max-width: 20ch; margin-bottom: 14px; }
+  .picked { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
+  .picked li { font-size: .85rem; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+  .warn { margin: 16px 0 0; font-size: .95rem; color: var(--muted); max-width: 56ch; }
+  .list { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 14px; }
+  .res {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px;
+    padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  }
+  .rank { font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1; color: var(--muted); min-width: 1.4ch; font-variant-numeric: tabular-nums; }
+  .res .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .res h3 { font-family: var(--font-display); font-weight: 650; font-size: 1.4rem; line-height: 1.15; letter-spacing: -0.015em; margin: 0; overflow-wrap: anywhere; }
+  .meta { margin: 4px 0 0; font-size: .9rem; color: var(--muted); }
+  .pct { text-align: right; min-width: 72px; }
+  .pct b { display: block; font-family: var(--font-display); font-size: 1.6rem; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pct span { font-size: .75rem; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .bar { height: 4px; border-radius: 2px; background: var(--line); margin-top: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .live { margin: 10px 0 0; font-size: .85rem; font-weight: 600; color: var(--accent); }
+  .live[hidden] { display: none; }
+  .desc { margin: 12px 0 0; max-width: 60ch; }
+  .why { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 12px 0 0; }
+  .why li { font-size: .8rem; padding: 2px 9px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
+  .find { display: inline-block; margin-top: 12px; font-size: .9rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .find:hover { text-decoration: underline; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .btn { padding: 12px 20px; border-radius: 10px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .btn:hover { filter: brightness(1.06); }
+
+  @media (max-width: 520px) {
+    .res { grid-template-columns: 1fr; gap: 8px; }
+    .rank { font-size: 1.4rem; }
+    .pct { text-align: left; }
+    .cat { min-height: 150px; gap: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <button class="brand" id="brand" type="button" aria-label="Ne Açsam, başa dön"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>Ne Açsam</button>
+  </header>
+
+  <main>
+    <section id="home">
+      <h1 id="home-title" tabindex="-1">Ne açsam<span>?</span></h1>
+      <p class="lead">İstediğin kadar soruya cevap ver. Sana uyan bir oyun, albüm ya da film çıkaralım.</p>
+      <div class="cats" id="cats"></div>
+      <p class="note" id="note"></p>
+    </section>
+
+    <section id="setup" hidden>
+      <div class="qhead">
+        <button class="back" id="sback" type="button">← Geri</button>
+        <span class="tag" id="stag"></span>
+      </div>
+      <h2 id="stitle" tabindex="-1">Kaç soru soralım?</h2>
+      <p class="lead">Az soru hızlı sonuç verir. Çok soru daha isabetli öneri çıkarır. Klavyeden 3 ile 8 arası bir tuşa da basabilirsin.</p>
+      <div class="counts" id="counts"></div>
+    </section>
+
+    <section id="quiz" hidden>
+      <div class="qhead">
+        <button class="back" id="back" type="button">← Geri</button>
+        <span class="tag" id="qtag"></span>
+        <span class="count" id="qcount"></span>
+      </div>
+      <div class="progress" id="progress" aria-hidden="true"></div>
+      <div id="qbody"></div>
+    </section>
+
+    <section id="result" hidden>
+      <div class="rhead">
+        <span class="tag" id="rtag"></span>
+        <h2 id="rtitle" tabindex="-1">Senin için seçtiklerimiz</h2>
+        <ul class="picked" id="picked"></ul>
+        <p class="warn" id="warn" hidden></p>
+        <p class="warn" id="rnote" hidden>IMDb puanları yaklaşıktır ve zamanla değişir. Güncel puan için IMDb'ye bak.</p>
+      </div>
+      <ol class="list" id="list"></ol>
+      <div class="actions">
+        <button class="btn primary" id="more" type="button">5 öneri daha</button>
+        <button class="btn" id="edit" type="button">Cevapları değiştir</button>
+        <button class="btn" id="recount" type="button">Soru sayısını değiştir</button>
+        <button class="btn" id="restart" type="button">Baştan başla</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* Film: başlık|yıl|dakika|ruh(g,h,d,u)|dünya(r,y,s)|kimle(t,c,k)|ülke(t,a,d)|tempo(h,y)|animasyon(e,n)|açıklama */
+var FILM_RAW = [
+"Hababam Sınıfı|1975|87|g|r|k|t|h|n|Okulun en yaramaz sınıfı, Güdük Necmi ve Mahmut Hoca. Türk komedisinin klasiği.",
+"Eşkıya|1996|128|uh|rs|tc|t|y|n|Yıllar sonra hapisten çıkan bir eşkıya, değişmiş bir dünyayla ve eski hesabıyla yüzleşiyor.",
+"Babam ve Oğlum|2005|108|u|r|ck|t|y|n|Bir baba ile oğlunun zor yıllarını anlatan, gözleri dolduran bir aile filmi.",
+"Organize İşler|2005|118|g|s|k|t|h|n|Beceriksiz bir grup hırsızın büyük işi. Replikleri ezbere bilinen bir komedi.",
+"G.O.R.A.|2004|127|g|y|k|t|h|n|Bir halı satıcısı uzaylılara esir düşerse? Türk komedisinde bilim kurgu denemesi.",
+"Vizontele|2001|110|gu|r|ck|t|y|n|1974'te küçük bir Anadolu kasabasına ilk televizyonun gelişi.",
+"Uzak|2002|110|d|r|t|t|y|n|İstanbul'da karlı bir kışta buluşan iki akrabanın sessiz ve yalnız günleri.",
+"Bir Zamanlar Anadolu'da|2011|157|d|s|t|t|y|n|Bir cesedi arayan ekibin gece boyu süren yolculuğu.",
+"Kış Uykusu|2014|196|d|r|t|t|y|n|Kapadokya'da otel işleten eski bir tiyatrocunun uzun ve sert konuşmaları.",
+"Ahlat Ağacı|2018|188|d|r|t|t|y|n|Yazar olmak isteyen bir gencin köyüne dönüşü ve babasıyla yaşadıkları.",
+"Ayla|2017|125|u|r|ck|t|y|n|Kore Savaşı'nda bir Türk askerinin yetim bir kızla kurduğu bağ. Gerçek hikâyeye dayanır.",
+"Yol|1982|114|d|r|t|t|y|n|Cezaevinden izinli çıkan beş mahkûmun Türkiye'de yaşadıkları.",
+"Kuru Otlar Üstüne|2023|197|d|r|t|t|y|n|Anadolu'nun uzak bir köyünde görevli bir öğretmenin uzun ve sert kış yılı.",
+"Esaretin Bedeli|1994|142|ud|rs|tck|a|y|n|Haksız yere hapse düşen bir bankacının umudu ve dostluğu.",
+"Baba|1972|175|dh|s|t|a|y|n|Bir mafya ailesinin güç ve sadakat hikâyesi.",
+"Baba 2|1974|202|d|s|t|a|y|n|İlk filmin devamı. Vito'nun gençliği ile Michael'ın karanlık yükselişi iç içe anlatılır.",
+"Yedi|1995|127|hd|s|t|a|y|n|Yedi ölümcül günahı cinayetlere dönüştüren bir katilin peşindeki iki dedektif.",
+"Forrest Gump|1994|142|ug|r|ck|a|y|n|Sade bir adamın Amerikan tarihinin ortasından geçen hayatı.",
+"Yeşil Yol|1999|189|ud|ry|tc|a|y|n|Ölüm koğuşunda görevli bir gardiyanın, olağanüstü bir mahkûmla tanışması.",
+"Schindler'in Listesi|1993|195|ud|r|t|a|y|n|Yüzlerce Yahudi'yi kurtaran bir sanayicinin gerçek hikâyesi.",
+"Hayat Güzeldir|1997|116|ug|r|ck|d|y|n|Toplama kampında oğlunu bir oyunla koruyan bir babanın hikâyesi.",
+"Dövüş Kulübü|1999|139|hd|rs|tk|a|h|n|Uykusuzluktan bunalan bir ofis çalışanı ve yeraltı dövüş kulübü.",
+"Leon|1994|110|h|s|t|d|h|n|Profesyonel bir tetikçi ile ailesi öldürülen genç bir kız.",
+"Kuzuların Sessizliği|1991|118|h|s|t|a|y|n|Bir seri katili yakalamak için tutuklu bir psikiyatristten yardım isteyen ajan.",
+"Pulp Fiction|1994|154|hg|s|tk|a|h|n|Birbirine dolanan suç hikâyeleri, karıştırılmış bir sırayla.",
+"Sıkı Dostlar|1990|145|h|s|tk|a|h|n|Mafyada yükselen bir gencin yirmi beş yıllık hikâyesi.",
+"Gladyatör|2000|155|hu|r|tk|a|h|n|İhanete uğrayan bir Romalı general arenada intikam arıyor.",
+"Cesur Yürek|1995|178|hu|r|tk|a|h|n|Ortaçağ İskoçya'sında İngiliz yönetimine karşı ayaklanan William Wallace'ın hikâyesi.",
+"Kayıp Kız|2014|149|hd|s|tc|a|y|n|Karısı kaybolan bir adamın şüpheli olduğu bir gerilim.",
+"Joker|2019|122|d|rs|t|a|y|n|Toplum tarafından dışlanan bir adamın Joker'e dönüşümü.",
+"Parazit|2019|132|dh|rs|tck|d|h|n|Yoksul bir ailenin zengin bir eve sızışı. Beklenmedik yerlere varıyor.",
+"Oldboy|2003|120|hd|s|t|d|h|n|Sebepsiz yere on beş yıl hapsedilen bir adamın intikamı.",
+"Kara Şövalye|2008|152|h|s|tk|a|h|n|Batman ile Joker'in Gotham'daki mücadelesi.",
+"Başlangıç|2010|148|hd|y|tk|a|h|n|Rüyaların içine girip fikir çalan bir ekibin soygunu.",
+"Yıldızlararası|2014|169|ud|y|tk|a|y|n|Dünya yaşanmaz hale gelirken bir grup astronotun uzay yolculuğu.",
+"Matrix|1999|136|hd|y|tk|a|h|n|Yaşadığı dünyanın bir simülasyon olduğunu öğrenen bir programcı.",
+"Terminatör 2: Mahşer Günü|1991|137|h|y|tk|a|h|n|Gelecekten gelen bir robot, genç bir çocuğu başka bir robottan korur.",
+"Yüzüklerin Efendisi: Yüzük Kardeşliği|2001|178|hu|y|tk|a|h|n|Tek Yüzük'ü yok etmek için yola çıkan dokuz kişilik grup.",
+"Harry Potter ve Felsefe Taşı|2001|152|gu|y|k|a|y|n|Büyücü olduğunu on bir yaşında öğrenen çocuğun Hogwarts'taki ilk yılı.",
+"Yıldız Savaşları: Yeni Bir Umut|1977|121|h|y|k|a|h|n|Uzak bir galakside isyancılar ile İmparatorluk arasındaki savaşın başlangıcı.",
+"Jurassic Park|1993|127|h|y|k|a|h|n|Genetikle yeniden yaratılan dinozorların yaşadığı bir ada parkı.",
+"Geleceğe Dönüş|1985|116|gh|y|k|a|h|n|Bir lise öğrencisi zaman makinesiyle geçmişe gidip annesinin gençliğine karışıyor.",
+"Indiana Jones: Kutsal Hazine Avcıları|1981|115|h|y|k|a|h|n|Arkeolog Indiana Jones, Naziler'den önce Ahit Sandığı'na ulaşmaya çalışıyor.",
+"Alien|1979|117|h|y|t|a|y|n|Uzay gemisinde mürettebatın peşine düşen bir yaratık.",
+"Blade Runner|1982|117|d|y|t|a|y|n|Yağmurlu bir gelecekte kaçak androidleri arayan polis.",
+"Mad Max: Fury Road|2015|120|h|y|tk|a|h|n|Çölde baştan sona süren bir kovalamaca.",
+"Dune|2021|155|h|y|tk|a|y|n|Çöl gezegeni Arrakis için verilen güç mücadelesi.",
+"Sil Baştan|2004|108|ud|yr|tc|a|y|n|Eski sevgilisini hafızasından sildirmek isteyen bir adam.",
+"Truman Show|1998|103|dg|y|tc|a|y|n|Hayatının bir televizyon programı olduğunu fark eden adam.",
+"Amélie|2001|122|ug|r|tc|d|y|n|Paris'te çevresindekilere küçük iyilikler yapan hayalperest bir garson.",
+"Ruhların Kaçışı|2001|125|u|y|k|d|y|e|Ruhlar dünyasına düşen küçük bir kızın macerası.",
+"Prenses Mononoke|1997|134|hd|y|tk|d|y|e|Doğa ile insan arasındaki savaşın ortasında kalan genç bir savaşçı.",
+"Yürüyen Şato|2004|119|u|y|ck|d|y|e|Lanetlenip yaşlanan genç bir kız, büyücü Howl'ın şatosuna sığınıyor.",
+"Komşum Totoro|1988|86|u|y|k|d|y|e|İki kız kardeşin kırsalda orman ruhlarıyla tanışması.",
+"Senin Adın|2016|106|u|y|c|d|h|e|Birbirinin bedeninde uyanmaya başlayan iki gencin hikâyesi.",
+"Akira|1988|124|h|y|tk|d|h|e|Neo-Tokyo'da gizemli güçlere sahip bir çetenin hikâyesi.",
+"Coco|2017|105|ug|y|k|a|y|e|Müziğin yasak olduğu bir ailenin çocuğu Ölüler Diyarı'na yolculuk ediyor.",
+"Oyuncak Hikâyesi|1995|81|gu|y|k|a|h|e|Oyuncakların, çocuk odadan çıkınca başlayan gizli hayatı.",
+"Yukarı Bak|2009|96|ug|y|k|a|y|e|Yaşlı bir adam evini balonlarla uçurup hayalindeki yere gidiyor.",
+"WALL·E|2008|98|u|y|k|a|y|e|Terk edilmiş Dünya'da tek başına çalışan küçük bir temizlik robotu.",
+"Ratatouille|2007|111|gu|y|k|a|h|e|Şef olmak isteyen bir fare Paris'te bir mutfağa karışıyor.",
+"Muhteşem Aile|2004|115|gh|y|k|a|h|e|Süper güçlerini saklayan bir ailenin yeniden göreve dönüşü.",
+"Aslan Kral|1994|88|u|y|k|a|y|e|Babasını kaybeden genç aslan Simba'nın krallığa dönüş yolculuğu.",
+"Shrek|2001|90|g|y|k|a|h|e|Bir bataklık canavarı, konuşan bir eşek ve kurtarılacak bir prenses.",
+"Kayıp Balık Nemo|2003|100|gu|y|k|a|h|e|Kaybolan oğlunu okyanusun öbür ucuna kadar arayan bir palyaço balığı.",
+"Ters Yüz|2015|95|ug|y|k|a|y|e|Bir kızın zihnindeki duyguların başrol olduğu bir hikâye.",
+"Örümcek Adam: Örümcek Evreninde|2018|117|hg|y|tk|a|h|e|Miles Morales'in Örümcek Adam olma hikâyesi.",
+"Soul|2020|100|ud|y|tc|a|y|e|Bir caz piyanisti, doğmamış ruhlarla yaşamın anlamını arıyor.",
+"Kung Fu Panda|2008|92|g|y|k|a|h|e|Tembel bir panda, Ejderha Savaşçısı oluyor.",
+"Ejderhanı Nasıl Eğitirsin|2010|98|hu|y|k|a|h|e|Bir Viking çocuğu, ejderhalara düşman bir köyde bir ejderhayla dost oluyor.",
+"Çılgın Hırsız|2010|95|g|y|k|a|h|e|Ay'ı çalmak isteyen bir hırsız, üç yetim kızla karşılaşıyor.",
+"Zootropolis|2016|108|g|y|k|a|h|e|Hayvanların yaşadığı bir şehirde tavşan bir polis ve düzenbaz bir tilki.",
+"Grand Budapest Hotel|2014|99|g|rs|ck|a|h|n|Efsanevi bir otelin kapı görevlisi ve çırağı, çalıntı bir tablonun peşinde.",
+"Küçük Bayan Sunshine|2006|101|gu|r|k|a|y|n|Dağınık bir ailenin, küçük kızın güzellik yarışması için çıktığı minibüs yolculuğu.",
+"Bıçaklar Çekildi|2019|130|gh|s|ck|a|h|n|Zengin bir yazarın ölümünü araştıran esprili bir cinayet bilmecesi.",
+"Evde Tek Başına|1990|103|g|r|k|a|h|n|Evde unutulan çocuk, hırsızları kendi tuzaklarıyla karşılıyor.",
+"Hayalet Avcıları|1984|105|gh|y|k|a|h|n|New York'ta hayalet avlayan üç bilim insanı.",
+"The Big Lebowski|1998|117|g|s|tk|a|y|n|Yanlışlıkla bir milyonerle karıştırılan tembel bir adamın macerası.",
+"Felekten Bir Gece|2009|100|g|r|k|a|h|n|Bekârlığa veda gecesinden sonra damadı kaybeden üç arkadaş.",
+"Intouchables|2011|112|ug|r|ck|d|y|n|Felçli bir milyoner ile bakıcısı olan genç adamın gerçek hikâyeye dayanan dostluğu.",
+"Bayan Doubtfire|1993|125|gu|r|k|a|h|n|Çocuklarını görmek için kadın bakıcı kılığına giren bir baba.",
+"Titanic|1997|195|u|r|c|a|y|n|Batan dev geminin güvertesinde başlayan bir aşk.",
+"Notting Hill|1999|124|gu|r|c|d|y|n|Londra'da kitapçı sahibi ile ünlü bir aktrisin tanışması.",
+"Gün Doğmadan|1995|101|ud|r|c|a|y|n|Trende tanışan iki gencin Viyana sokaklarında geçen bir gecesi.",
+"Kazablanka|1942|102|ud|r|c|a|y|n|Savaş yıllarında Kazablanka'da bir barın sahibi, eski sevgilisiyle karşılaşıyor.",
+"Roma Tatili|1953|118|ug|r|c|a|y|n|Roma'da kaçak gezen bir prenses ve gazeteci.",
+"Psycho|1960|109|h|s|t|a|y|n|Issız bir motelde kalan genç bir kadının başına gelenler.",
+"Arka Pencere|1954|112|h|s|tc|a|y|n|Bacağı alçıda olan fotoğrafçı, karşı apartmanda bir cinayetten şüpheleniyor.",
+"Cinnet|1980|146|h|s|t|a|y|n|Kış boyunca kapalı bir otelde bekçilik yapan yazarın çöküşü.",
+"Get Out|2017|104|hd|s|tc|a|h|n|Sevgilisinin ailesini ziyaret eden genç bir adamın giderek artan huzursuzluğu.",
+"Hereditary|2018|127|h|s|t|a|y|n|Bir ailenin yas sürecinde yaşadığı korkunç olaylar.",
+"Sessiz Bir Yer|2018|90|h|y|ck|a|h|n|Sese tepki veren yaratıkların dünyasında sessiz kalmaya çalışan bir aile.",
+"Çığlık|1996|111|hg|s|k|a|h|n|Bir kasabada maskeli bir katilin peşindeki liseliler.",
+"Memento|2000|113|hd|s|t|a|y|n|Kısa süreli hafızası olan bir adamın eşinin katilini arayışı.",
+"Prestij|2006|130|hd|y|tc|a|y|n|İki rakip sihirbazın birbirini alt etme hırsı.",
+"Shutter Island|2010|138|hd|s|t|a|y|n|Bir hastane adasında kaybolan hastayı arayan federal ajan.",
+"Zodiac|2007|157|d|s|t|a|y|n|San Francisco'yu korkutan gerçek bir seri katilin izini süren gazeteciler.",
+"Top Gun: Maverick|2022|130|h|r|k|a|h|n|Yıllar sonra eğitmen olarak dönen pilot Maverick'in zor görevi.",
+"Oppenheimer|2023|180|d|r|t|a|y|n|Atom bombasının babası Oppenheimer'ın hikâyesi.",
+"Barbie|2023|114|g|y|ck|a|h|n|Barbie Land'den gerçek dünyaya geçen Barbie'nin kendini bulma yolculuğu.",
+"Her Şey Her Yerde Aynı Anda|2022|139|gu|y|tc|a|h|n|Bir çamaşırhane sahibi, çoklu evrenleri aşarak dünyayı kurtarmaya çalışıyor.",
+"Whiplash|2014|107|h|r|t|a|h|n|Genç bir davulcu ile acımasız hocasının mükemmellik savaşı.",
+"La La Land|2016|128|ug|r|c|a|y|n|Los Angeles'ta bir caz piyanisti ile bir oyuncu adayının aşkı. Müzikal.",
+"Bohemian Rhapsody|2018|134|u|r|k|a|h|n|Queen grubunun ve Freddie Mercury'nin hikâyesi.",
+"Denizin Dişleri|1975|124|h|s|k|a|h|n|Bir sahil kasabasını tehdit eden dev bir köpekbalığı.",
+"E.T.|1982|115|u|y|k|a|y|n|Dünya'da mahsur kalan küçük bir uzaylı ve onu saklayan bir çocuk.",
+"Rocky|1976|119|u|r|tc|a|y|n|Sıradan bir boksörün dünya şampiyonuyla maç yapma şansı.",
+"Busan'a Tren|2016|118|h|s|tk|d|h|n|Zombi salgını sırasında hızlı trende hayatta kalma mücadelesi.",
+"Er Ryan'ı Kurtarmak|1998|169|hu|r|tk|a|h|n|İkinci Dünya Savaşı'nda bir askeri kurtarmaya gönderilen takım.",
+"1917|2019|119|h|r|tk|a|h|n|Birinci Dünya Savaşı'nda bir mesajı cepheye ulaştırmaya çalışan iki asker.",
+"Dunkirk|2017|106|h|r|tk|a|h|n|Dunkirk sahilinde sıkışan askerlerin tahliyesi.",
+"Piyanist|2002|150|ud|r|t|d|y|n|Varşova Gettosu'nda hayatta kalmaya çalışan Yahudi bir piyanistin hikâyesi.",
+"Taksi Şoförü|1976|114|d|rs|t|a|y|n|Geceleri New York'ta taksi süren, yalnızlıkla boğuşan bir Vietnam gazisi.",
+"The Social Network|2010|120|d|r|t|a|h|n|Facebook'un kuruluş hikâyesi ve davaları.",
+"Avengers: Endgame|2019|181|hu|y|tk|a|h|n|Yenilen kahramanların son bir hamle için bir araya gelişi.",
+"Iron Man|2008|126|gh|y|tk|a|h|n|Silah üreticisi Tony Stark zırhını giyiyor.",
+"Black Panther|2018|134|h|y|tk|a|h|n|Wakanda'nın yeni kralının tahtı ve ülkesini koruma mücadelesi.",
+"John Wick|2014|101|h|s|t|a|h|n|Köpeği öldürülen emekli bir tetikçinin intikamı.",
+"Görevimiz Tehlike: Fallout|2018|147|h|s|tk|a|h|n|Ethan Hunt'ın nükleer tehdidi önleme görevi.",
+"Casino Royale|2006|144|h|s|tc|d|h|n|Daniel Craig'in Bond'u ilk kez oynadığı, kumar masasında geçen film.",
+"Skyfall|2012|143|h|s|tc|d|h|n|MI6'a saldıran eski bir ajan ve Bond'un geçmişine dönüş.",
+"Yerçekimi|2013|91|h|y|t|a|h|n|Uzayda tek başına kalan bir astronotun hayatta kalma mücadelesi.",
+"Geliş|2016|116|du|y|t|a|y|n|Dünya'ya gelen uzaylılarla iletişim kurmaya çalışan bir dilbilimci.",
+"Ex Machina|2014|108|hd|y|t|d|y|n|Gerçek bir yapay zekâyı test etmeye çağrılan genç programcı.",
+"Karayip Korsanları: Siyah İnci'nin Laneti|2003|143|gh|y|k|a|h|n|Kaptan Jack Sparrow ve lanetli bir korsan gemisi.",
+"Amadeus|1984|160|d|r|t|a|y|n|Mozart'ın dehasına öfkelenen Salieri'nin gözünden bir hikâye.",
+"Müziğin Sesi|1965|172|ug|r|k|a|y|n|Bir rahibenin Von Trapp ailesinin çocuklarına bakıcılığı. Müzikal.",
+"Mamma Mia!|2008|108|gu|r|k|d|h|n|Bir kızın düğününden önce babasının kim olduğunu bulma çabası. ABBA şarkılarıyla.",
+"En Büyük Showman|2017|105|ug|r|k|a|h|n|Sirk kurucusu P. T. Barnum'un hikâyesi. Müzikal.",
+"Ölü Ozanlar Derneği|1989|128|ud|r|tk|a|y|n|Bir okula gelen öğretmen, öğrencilere kendi sesini bulmayı öğretiyor.",
+"Good Will Hunting|1997|126|ud|r|tc|a|y|n|Matematik dehası bir temizlik görevlisinin bir psikologla karşılaşması.",
+"Akıl Oyunları|2001|135|ud|r|tc|a|y|n|Matematikçi John Nash'in dehası ve zihinsel savaşı.",
+"Rain Man|1988|133|ug|r|tc|a|y|n|Otizmli ağabeyiyle yolculuğa çıkan bir adamın hikâyesi.",
+"Into the Wild|2007|148|ud|r|t|a|y|n|Tüm parasını bırakıp Alaska'ya giden bir gencin gerçek hikâyesi.",
+"Pi'nin Yaşamı|2012|127|ud|y|t|a|y|n|Bir gemi kazasından sonra bir kaplanla filikada kalan genç.",
+"Slumdog Millionaire|2008|120|ug|r|tc|d|h|n|Mumbai gecekondularından gelen bir gencin televizyondaki bilgi yarışması.",
+"3 Idiots|2009|170|gu|r|k|d|h|n|Mühendislik okulunda üç arkadaşın başarı baskısına karşı komik ve dokunaklı mücadelesi.",
+"Dangal|2016|161|u|r|k|d|h|n|Kızlarını güreş şampiyonu yapmaya çalışan bir babanın gerçek hikâyesi.",
+"Cinema Paradiso|1988|124|u|r|tc|d|y|n|Küçük bir İtalyan kasabasında sinema ile büyüyen bir çocuk.",
+"Pan'ın Labirenti|2006|118|d|y|t|d|y|n|İspanya iç savaşında hayal dünyasına sığınan bir kız.",
+"Tanrı Şehri|2002|130|h|s|tk|d|h|n|Rio'nun yoksul mahallesinde büyüyen iki gencin farklı yolları.",
+"Yedi Samuray|1954|207|hd|r|t|d|y|n|Bir köyü haydutlardan korumak için toplanan yedi savaşçı.",
+"Her|2013|126|ud|y|t|a|y|n|Yapay zekâ ile ilişki kuran yalnız bir adamın hikâyesi.",
+"Moonlight|2016|111|ud|r|t|a|y|n|Üç dönemde bir gencin kimliğini ve sevgiyi arayışı.",
+"Birdman|2014|119|dg|r|t|a|h|n|Eski bir süper kahraman oyuncusunun Broadway'de kendini kanıtlama çabası.",
+"Lost in Translation|2003|102|ud|r|tc|a|y|n|Tokyo'da yalnızlık yaşayan iki yabancının tesadüfen dostluğu.",
+"Midnight in Paris|2011|94|gu|y|c|a|y|n|Paris'te gece yürüyüşünde 1920'lere kayan bir yazar.",
+"American Beauty|1999|122|d|r|t|a|y|n|Banliyö hayatının ardındaki boşluğu anlatan siyah komedi.",
+"Fargo|1996|98|gh|s|tc|a|y|n|Karlı bir kasabada kötü giden bir adam kaçırma planı.",
+"No Country for Old Men|2007|122|hd|s|t|a|y|n|Çöl ortasında bulduğu parayı alan bir adamı kovalayan acımasız bir katil.",
+"Reservoir Dogs|1992|99|h|s|tk|a|h|n|Başarısız bir soygundan sonra depoda toplanan suçlular.",
+"Django Unchained|2012|165|hg|r|tk|a|h|n|Özgürlüğüne kavuşan bir köle ve bir ödül avcısının intikam yolculuğu.",
+"Soysuzlar Çetesi|2009|153|hg|r|tk|a|h|n|İkinci Dünya Savaşı'nda Nazilere karşı kanlı bir intikam hikâyesi.",
+"Kill Bill: Vol. 1|2003|111|h|s|tk|a|h|n|Düğün gününde vurulan bir kadının intikam yolculuğu.",
+"Heat|1995|170|hd|s|tk|a|y|n|Usta bir hırsız ile onu yakalamaya çalışan dedektifin kedi-fare oyunu.",
+"Scarface|1983|170|hd|s|t|a|h|n|Miami'de suç dünyasının zirvesine çıkan bir göçmenin yükseliş ve çöküşü.",
+"The Departed|2006|151|hd|s|tk|a|h|n|Mafya ile polisin birbirine sızdırdığı iki ajanın hikâyesi.",
+"The Wolf of Wall Street|2013|180|g|r|tk|a|h|n|Borsa simsarı Jordan Belfort'un abartılı yükseliş ve düşüşü.",
+"Catch Me If You Can|2002|141|gh|r|tck|a|h|n|Sahte kimliklerle çek sahteciliği yapan bir gencin, bir FBI ajanıyla kovalamacası.",
+"Good Bye, Lenin!|2003|121|gu|r|ck|d|y|n|Komadan uyanan annesine Doğu Almanya'nın hâlâ ayakta olduğunu inandıran bir oğul.",
+"Başkalarının Hayatı|2006|137|du|r|t|d|y|n|Doğu Almanya'da bir oyun yazarını gizlice dinleyen Stasi ajanı.",
+"Run Lola Run|1998|81|h|s|t|d|h|n|Sevgilisini kurtarmak için yirmi dakikası olan bir kızın üç farklı koşusu."
+];
+FILM_RAW = FILM_RAW.concat([
+"12 Kızgın Adam|1957|96|d|s|t|a|y|n|Bir cinayet davasında tek bir jüri üyesinin diğer on bir kişiyi yeniden düşündürmesi.",
+"Şahane Hayat|1946|130|u|r|k|a|y|n|Umudunu kaybeden bir adama hayatının kimlere dokunduğunu gösteren bir melek.",
+"Vertigo|1958|128|d|s|tc|a|y|n|Yükseklik korkusu olan bir dedektifin saplantılı arayışı.",
+"Citizen Kane|1941|119|d|r|t|a|y|n|Bir medya patronunun son sözü olan “Rosebud”un anlamını arayan gazeteciler.",
+"Sunset Boulevard|1950|110|d|r|t|a|y|n|Unutulmuş bir sessiz film yıldızı ile genç bir senaristin tehlikeli ilişkisi.",
+"Tokyo Story|1953|136|u|r|t|d|y|n|Yaşlı bir çiftin Tokyo'daki çocuklarını ziyareti. Sessiz ve dokunaklı bir klasik.",
+"Lawrence of Arabia|1962|218|h|r|t|a|y|n|Birinci Dünya Savaşı'nda Arap çölünde bir İngiliz subayın destansı hikâyesi.",
+"Apocalypse Now|1979|147|d|r|t|a|y|n|Vietnam'da nehir boyunca bir albayı arayan kaptan.",
+"Full Metal Jacket|1987|116|d|r|t|a|y|n|Vietnam Savaşı öncesinde ve sırasında genç deniz askerlerinin dönüşümü.",
+"Aliens|1986|137|h|y|tk|a|h|n|Ripley, ilk filmdeki yaratıkların yaşadığı gezegene dönüyor.",
+"Terminatör|1984|107|h|y|tk|a|h|n|Gelecekten gönderilen bir katil robot, Sarah Connor'ın peşinde.",
+"Zor Ölüm|1988|132|h|s|tk|a|h|n|Noel gecesi, rehin alınan gökdelende tek başına savaşan polis.",
+"Raging Bull|1980|129|d|r|t|a|y|n|Boksör Jake LaMotta'nın şiddet ve kıskançlıkla yıkılan hayatı.",
+"Otomatik Portakal|1971|136|d|y|t|d|y|n|Şiddete düşkün bir gencin devlet tarafından “tedavi” edilmesi.",
+"2001: A Space Odyssey|1968|149|d|y|t|a|y|n|Uzayda yapay zekâ ile insanın karşı karşıya geldiği bilim kurgu klasiği.",
+"Dr. Strangelove|1964|95|g|s|t|a|y|n|Soğuk Savaş'ta nükleer felaketin eşiğindeki karanlık bir komedi.",
+"Bir Zamanlar Amerika|1984|229|d|s|t|d|y|n|New York'ta büyüyen dört gangsterin onlarca yıllık hikâyesi.",
+"İyi, Kötü ve Çirkin|1966|161|h|r|tk|d|y|n|İç savaş yıllarında gömülü altının peşindeki üç adam.",
+"Bir Zamanlar Batı'da|1968|165|h|r|t|d|y|n|Demiryolu için toprağını satmak istemeyen dul bir kadın ve üç silahşör.",
+"Prisoners|2013|153|hd|s|t|a|y|n|Kızı kaybolan bir babanın şüpheliyi kendi başına sorgulaması.",
+"Sicario|2015|121|h|s|t|a|h|n|Meksika sınırında uyuşturucu savaşına karışan genç bir FBI ajanı.",
+"Nightcrawler|2014|117|d|s|t|a|h|n|Los Angeles'ta suç sahnelerini çekip televizyona satan bir adam.",
+"Mystic River|2003|138|d|s|t|a|y|n|Çocukluk arkadaşı üç adamın, bir cinayetle yeniden kesişen hayatları.",
+"Altıncı His|1999|107|hd|s|tc|a|y|n|Ölüleri gören küçük bir çocuk ve bir çocuk psikoloğu.",
+"Olağan Şüpheliler|1995|106|hd|s|t|a|y|n|Beş şüphelinin sorgusu ve Keyser Soze efsanesi.",
+"L.A. Confidential|1997|138|hd|s|t|a|y|n|1950'lerin Los Angeles'ında üç polisin birbirine dolanan davası.",
+"Chinatown|1974|130|d|s|t|a|y|n|Los Angeles'ta bir özel dedektifin su skandalına uzanan soruşturması.",
+"Spotlight|2015|129|d|r|t|a|y|n|Boston Globe gazetecilerinin kilisedeki istismarı ortaya çıkarması.",
+"The Revenant|2015|156|hd|r|t|a|y|n|Ayı saldırısında ölüme terk edilen bir avcının intikam yolculuğu.",
+"Blade Runner 2049|2017|164|d|y|t|a|y|n|İlk filmden otuz yıl sonra, yeni bir replikant avcısının sırrı.",
+"Avatar|2009|162|h|y|k|a|h|n|Pandora gezegeninde Na'vi halkına karışan eski bir asker.",
+"Moon|2009|97|d|y|t|d|y|n|Ay'da tek başına görev yapan bir adamın kendi izine rastlaması.",
+"District 9|2009|112|h|y|t|d|h|n|Johannesburg'un üzerinde asılı kalan uzaylı gemisi ve mülteci kampı.",
+"Marslı|2015|144|gh|y|tk|a|h|n|Mars'ta unutulan bir astronotun hayatta kalma mücadelesi.",
+"Edge of Tomorrow|2014|113|h|y|tk|a|h|n|Her ölümde aynı güne dönen bir askerin uzaylılarla savaşı.",
+"Oyuncak Hikâyesi 3|2010|103|ug|y|k|a|h|e|Andy üniversiteye giderken oyuncakların kreşe düşmesi.",
+"Sevimli Canavarlar|2001|92|g|y|k|a|h|e|Canavar şehrinde korku fabrikasında çalışan iki arkadaş ve küçük bir kız.",
+"Büyük Kahraman 6|2014|102|g|y|k|a|h|e|Genç bir dahi ve şişme sağlık robotu Baymax.",
+"Karlar Ülkesi|2013|102|ug|y|k|a|h|e|Buz gücü olan prenses Elsa ve kız kardeşi Anna.",
+"Vaiana|2016|107|g|y|k|a|h|e|Okyanusa açılan bir Polinezya prensesinin macerası.",
+"The Iron Giant|1999|86|u|y|k|a|y|e|Soğuk Savaş yıllarında bir çocuk ile gökten düşen dev bir robot.",
+"Ateşböceklerinin Mezarı|1988|89|u|r|t|d|y|e|İkinci Dünya Savaşı'nda ayakta kalmaya çalışan iki kardeş.",
+"Yalnız Adam|2000|143|ud|r|t|a|y|n|Uçak kazasından sonra ıssız bir adada yaşayan bir adam.",
+"Pretty Woman|1990|119|gu|r|c|a|h|n|Zengin bir iş adamı ile bir sokak kızının beklenmedik aşkı.",
+"Dirty Dancing|1987|100|u|r|c|a|h|n|Bir tatil köyünde dans eden genç bir kızın aşkı.",
+"Not Defteri|2004|123|u|r|c|a|y|n|Yaşlı bir adamın, hafızasını yitiren eşine okuduğu aşk hikâyesi.",
+"500 Days of Summer|2009|95|gu|r|c|a|h|n|Bir aşkın kronolojik sırası bozulmuş anlatımı.",
+"Superbad|2007|113|g|r|k|a|h|n|Mezuniyet öncesi son partiye giden iki lise arkadaşı.",
+"Aptal ve Daha Aptal|1994|107|g|r|k|a|h|n|İki aptal arkadaşın bir çanta peşinde ülkeyi geçişi.",
+"Maske|1994|101|g|y|k|a|h|n|Takınca kişiliğini değiştiren sihirli bir maskeyi bulan banka memuru.",
+"Mean Girls|2004|97|g|r|k|a|h|n|Lise sosyal hiyerarşisine yeni giren bir kızın hikâyesi.",
+"School of Rock|2003|109|g|r|k|a|h|n|Sahte bir öğretmen, ilkokul çocuklarıyla rock grubu kuruyor.",
+"Ferris Bueller's Day Off|1986|103|g|r|k|a|h|n|Okulu kırıp Chicago'yu dolaşan bir liseli.",
+"The Breakfast Club|1985|97|ud|r|k|a|y|n|Cumartesi cezası için okulda buluşan beş farklı lise öğrencisi.",
+"300|2006|117|h|r|tk|a|h|n|Üç yüz Spartalı savaşçının Termopil Geçidi'ndeki direnişi.",
+"Hacksaw Ridge|2016|139|hu|r|t|a|h|n|Silahsız savaşan bir sıhhiyecinin gerçek hikâyesi.",
+"Büyük Kaçış|1963|172|h|r|tk|a|y|n|Savaş esirlerinin Nazi kampından toplu kaçış planı.",
+"Das Boot|1981|149|hd|r|t|d|y|n|İkinci Dünya Savaşı'nda bir Alman denizaltısının mürettebatı.",
+"Çöküş|2004|156|d|r|t|d|y|n|Hitler'in son günlerini bunkerden anlatan film.",
+"Monty Python and the Holy Grail|1975|91|g|y|k|d|h|n|Kral Arthur ve şövalyelerinin absürt kutsal kâse arayışı.",
+"Bir Ayrılık|2011|123|d|r|tc|d|y|n|İran'da bir boşanma davası etrafında büyüyen aile dramı."
+]);
+/* Oyun: başlık|yıl|tür(a,r,s,m,p,y,n,k)|tempo(a,s,d)|kimle(t,c)|süre(k,u)|dünya(f,g,s)|zorluk(r,z)|platform(p,k,m)|açıklama */
+var OYUN_RAW = [
+"Hades|2020|ar|a|t|k|f|z|pk|Ölüm tanrısının oğlu olarak yeraltından kaçmaya çalışırsın. Her ölüm hikâyeyi ilerletir.",
+"Stardew Valley|2016|m|s|tc|ku|s|r|pkm|Miras kalan çiftliği toparla, köylülerle arkadaş ol. Acelesi yok.",
+"The Witcher 3: Wild Hunt|2015|r|d|t|u|f|rz|pk|Canavar avcısı Geralt'ın büyük ve çok katmanlı hikâyesi.",
+"Celeste|2018|p|a|t|k|s|z|pk|Bir dağa tırmanan genç kadının hem zor hem sıcak hikâyesi.",
+"Minecraft|2011|m|sd|tc|ku|s|r|pkm|Bloklarla istediğini yap. Tek başına ya da arkadaşlarla.",
+"Portal 2|2011|p|d|tc|k|f|r|pk|Portal tabancasıyla çözülen bulmacalar. Tek ya da iki kişilik oynanır.",
+"Hollow Knight|2017|ap|ad|t|u|f|z|pk|Böceklerin yaşadığı, çürümeye yüz tutmuş bir yeraltı krallığını keşfedersin.",
+"Animal Crossing: New Horizons|2020|m|s|tc|k|s|r|k|Ücra bir adada kendi köyünü kur. Günde birkaç dakika bile yeter.",
+"Red Dead Redemption 2|2018|a|ds|t|u|g|r|pk|Vahşi Batı'nın son yıllarında bir çete üyesinin hikâyesi.",
+"Mario Kart 8 Deluxe|2017|y|a|c|k|s|r|k|Aynı odada oynanan, kolay öğrenilen, bol kahkahalı yarış.",
+"It Takes Two|2021|ap|d|c|u|s|r|pk|Sadece iki kişiyle oynanır. Boşanmak üzere olan bir çift oyuncağa dönüşür.",
+"Elden Ring|2022|ar|ad|tc|u|f|z|pk|Devasa, tehlikeli ve sana pek bir şey anlatmayan bir dünya.",
+"Counter-Strike 2|2023|n|a|c|k|g|z|p|Takım halinde oynanan, tek mermiyle bitebilen turlar.",
+"Among Us|2018|y|d|c|k|s|r|pkm|Aranızdaki sahtekârı bulun. Arkadaş kalabalığı için ideal.",
+"Disco Elysium|2019|r|d|t|u|g|r|pk|Hafızasını kaybetmiş bir dedektif. Savaş yok, diyalog var.",
+"Civilization VI|2016|s|d|tc|u|g|rz|pkm|Bir uygarlığı taş devrinden uzaya taşırsın. Hep bir tur daha oynarsın.",
+"Vampire Survivors|2022|a|as|t|k|f|r|pkm|Karakter kendi saldırır, sen yön ve yükseltmeleri seçersin. Kısa ve bağımlılık yapıcı.",
+"Cyberpunk 2077|2020|ar|ad|t|u|f|r|pk|Neon ışıklı Night City'de paralı asker V'nin hikâyesi.",
+"Journey|2012|p|s|t|k|f|r|pk|Çölde bir dağa yürüyen sessiz bir yolcu. Birkaç saatte biter.",
+"Overcooked! 2|2018|y|a|c|k|s|rz|pk|Dar bir mutfakta bağırarak yemek yaparsınız. Dostluklar sınanır.",
+"Baldur's Gate 3|2023|r|d|tc|u|f|rz|pk|Sıra tabanlı savaş, dev bir hikâye ve gerçek sonuçları olan seçimler.",
+"Rocket League|2015|y|a|c|k|s|z|pk|Roketli arabalarla futbol. Bir maç beş dakika sürer.",
+"Slay the Spire|2019|s|d|t|k|f|z|pkm|Desteni kur, kuleyi tırman. Her seferinde farklı bir deneme.",
+"Subnautica|2018|am|sd|t|u|f|r|pk|Yabancı bir okyanus gezegenine düşersin. Sığ sulardan karanlık derinliklere.",
+"Fall Guys|2020|y|a|c|k|s|r|pk|Fasulyeye benzeyen karakterlerle engelli yarışlar.",
+"Valheim|2021|am|ds|tc|u|f|rz|pk|Viking cennetinde ev kur, boss'lara karşı arkadaşlarınla savaş.",
+"Resident Evil 4|2023|ak|a|t|u|g|z|pk|Kaçırılan başkan kızını kurtarmaya giden ajan, tuhaf bir köyde.",
+"The Last of Us Part I|2022|a|d|t|u|g|r|pk|Salgın sonrası dünyada bir adamın ve bir kızın yolculuğu.",
+"Grand Theft Auto V|2013|a|a|tc|u|g|r|pk|Üç farklı karakterin gözünden Los Santos'ta soygun ve kaos.",
+"The Elder Scrolls V: Skyrim|2011|r|ds|t|u|f|r|pk|Ejderhalarla dolu kuzey diyarında istediğin yöne giden dev bir rol oyunu.",
+"Fallout: New Vegas|2010|r|d|t|u|f|rz|pk|Nükleer savaş sonrası Mojave Çölü'nde seçimlerin sonuç doğurduğu bir rol oyunu.",
+"Mass Effect 2|2010|r|ad|t|u|f|r|pk|Galaksiyi kurtaracak ekibi tek tek toplarsın.",
+"Dark Souls|2011|ar|ad|tc|u|f|z|pk|Zorluğuyla ünlü, karanlık bir şövalye macerası.",
+"Bloodborne|2015|ar|a|t|u|f|z|k|Gotik bir şehirde avcı olarak dehşet yaratıklarına karşı savaşırsın.",
+"Sekiro: Shadows Die Twice|2019|a|a|t|u|f|z|pk|Feodal Japonya'da kılıç düellosu ve zamanlama üzerine kurulu zor bir macera.",
+"The Legend of Zelda: Breath of the Wild|2017|a|sd|t|u|f|r|k|Açık bir dünyada istediğin yöne giderek keşfedersin.",
+"The Legend of Zelda: Tears of the Kingdom|2023|a|sd|t|u|f|r|k|Gökte ve yer altında keşfedeceğin, yaratıcılığı ödüllendiren dev bir macera.",
+"Super Mario Odyssey|2017|p|as|t|k|s|r|k|Mario'nun şapkasıyla düşmanların bedenine girdiği renkli 3D bir macera.",
+"Super Mario Bros.|1985|p|a|t|k|s|rz|k|Platform oyunlarının temelini atan klasik.",
+"Pokémon Scarlet ve Violet|2022|r|s|tc|u|s|r|k|Açık dünyada Pokémon yakala, eğit ve arkadaşlarınla macera yaşa.",
+"Tetris|1984|p|d|t|k|s|r|pkm|Düşen blokları sıraya diz. Her şeyin başlangıcı.",
+"Fortnite|2017|n|a|c|k|s|z|pkm|Yüz kişilik arenada hayatta kalıp inşa ederek son kişi olmaya çalışırsın.",
+"Valorant|2020|n|a|c|k|g|z|p|Ajan yeteneklerinin kullanıldığı takım tabanlı taktik nişancı.",
+"League of Legends|2009|s|ad|c|k|f|z|p|Beşe beş oynanan, dünyanın en çok oynanan çevrim içi oyunlarından biri.",
+"Dota 2|2013|s|d|c|k|f|z|p|Derinliği ve zorluğuyla bilinen, takım tabanlı strateji.",
+"Apex Legends|2019|n|a|c|k|f|z|pk|Üçlü takımlarla oynanan hızlı bir battle royale.",
+"Call of Duty: Modern Warfare|2019|n|a|tc|k|g|rz|pk|Sinematik kampanya ve hızlı çevrim içi çatışmalar.",
+"Battlefield 1|2016|n|a|tc|ku|g|rz|pk|Birinci Dünya Savaşı'nda büyük çaplı çatışmalar.",
+"Halo Infinite|2021|n|a|tc|ku|f|rz|pk|Master Chief'in açık dünyaya taşınan macerası.",
+"DOOM Eternal|2020|n|a|t|ku|f|z|pk|Şeytanları parçalayan, hızı hiç düşmeyen bir nişancı.",
+"Half-Life 2|2004|n|ad|t|ku|f|rz|p|Bilim kurgu dünyasında fizik tabanlı nişancı klasiği.",
+"BioShock|2007|n|d|t|ku|f|r|pk|Denizin dibindeki çöküş halindeki bir şehir.",
+"Final Fantasy VII Remake|2020|r|ad|t|u|f|r|pk|Midgar'daki asi bir grubun klasik hikâyesinin yeni yorumu.",
+"Persona 5 Royal|2019|r|d|t|u|f|r|pk|Gündüz lise öğrencisi, gece hayalet hırsız. Stilize bir JRPG.",
+"Genshin Impact|2020|r|as|tc|u|f|r|pkm|Ücretsiz oynanan, geniş ve renkli bir açık dünya rol oyunu.",
+"Terraria|2011|am|s|tc|u|s|rz|pkm|2D dünyada kaz, inşa et, canavarlarla savaş.",
+"Don't Starve|2013|am|d|tc|k|s|z|pkm|Karanlık bir dünyada aç ve çaresiz kalmadan hayatta kalmaya çalışırsın.",
+"Dead Cells|2018|ap|a|t|k|f|z|pkm|Her ölümde yeniden başlanan hızlı bir platform macerası.",
+"Cuphead|2017|p|a|tc|k|s|z|pk|1930'ların çizgi filmlerine benzeyen, boss savaşlarıyla dolu zorlayıcı bir oyun.",
+"Undertale|2015|r|d|t|k|s|rz|pk|Kimseyi öldürmeden de bitirilebilen, esprili bir rol oyunu.",
+"Limbo|2010|p|d|t|k|f|rz|pk|Siyah beyaz, sessiz ve ürkütücü bir bulmaca platform oyunu.",
+"Inside|2016|p|d|t|k|g|r|pk|Gizemli bir tesise sızan çocuğun hikâyesi. Tek kelime konuşmaz.",
+"Little Nightmares|2017|pk|d|t|k|f|r|pk|Devasa yaratıkların arasında küçük bir kızın kaçışı.",
+"Outlast|2013|k|d|t|k|g|r|pk|Akıl hastanesinde silahsız kaçış. Sadece kamerayla hayatta kalırsın.",
+"Amnesia: The Dark Descent|2010|k|d|t|k|f|r|p|Karanlık bir kalede delirmemeye çalışarak ilerleyen bir korku klasiği.",
+"Alien: Isolation|2014|k|d|t|u|f|z|pk|Bir uzay istasyonunda tek bir yaratıktan saklanmaya çalışırsın.",
+"Phasmophobia|2020|k|d|c|k|g|r|pk|Arkadaşlarınla perili evlere girip hayaletleri tespit edersiniz.",
+"Dead Space|2023|k|a|t|u|f|r|pk|Uzay gemisinde canavarlarla dolu hayatta kalma macerası. Yeniden yapım.",
+"Silent Hill 2|2001|k|d|t|u|g|rz|pk|Psikolojik korkunun temel taşlarından biri.",
+"Resident Evil 2|2019|k|a|t|ku|g|rz|pk|Raccoon City'de zombi saldırısından kaçış. Yeniden yapım.",
+"EA Sports FC 24|2023|y|a|c|k|g|r|pk|Futbol maçlarını takım veya arkadaşlarınla oynarsın.",
+"Forza Horizon 5|2021|y|as|tc|k|g|r|pk|Meksika'da açık dünyada yarış ve keşif.",
+"Gran Turismo 7|2022|y|s|tc|k|g|rz|k|Araba tutkunları için gerçekçi yarış simülasyonu.",
+"Need for Speed: Most Wanted|2005|y|a|tc|k|g|r|pk|Polisten kaçıp sokak yarışlarının tepesine çıkmak.",
+"Wii Sports|2006|y|a|c|k|s|r|k|Hareket algılayan kumandalarla tenis, bowling ve boks.",
+"Super Smash Bros. Ultimate|2018|a|a|c|k|s|rz|k|Nintendo karakterlerinin birbirini arenadan atmaya çalıştığı parti oyunu.",
+"Splatoon 3|2022|n|a|c|k|s|rz|k|Mürekkep tabancalarıyla boyayarak oynanan renkli çok oyunculu nişancı.",
+"Age of Empires II|1999|s|d|tc|u|g|rz|p|Ortaçağ'da uygarlığını kurup rakibini yenersin.",
+"StarCraft II|2010|s|a|tc|u|f|z|p|Hızlı karar isteyen bilim kurgu gerçek zamanlı strateji.",
+"XCOM 2|2016|s|d|t|u|f|z|pk|İstilacı uzaylılara karşı sıra tabanlı direniş.",
+"Crusader Kings III|2020|s|d|t|u|g|z|p|Ortaçağ'da bir hanedanı yönetirsin. Entrika ve miras.",
+"Cities: Skylines|2015|m|s|t|u|g|r|pk|Sıfırdan bir şehir kur ve trafiğiyle uğraş.",
+"The Sims 4|2014|m|s|t|u|g|r|pk|Sanal insanların hayatlarını yönetirsin.",
+"Planet Zoo|2019|m|s|t|u|g|r|p|Kendi hayvanat bahçeni kurar ve yönetirsin.",
+"Euro Truck Simulator 2|2012|m|s|t|u|g|r|p|Avrupa yollarında tır sürersin. Sakin bir oyun.",
+"Microsoft Flight Simulator|2020|m|s|t|u|g|rz|pk|Dünyanın uydu görüntüleriyle oluşturulmuş haritasında uçak sürersin.",
+"Kerbal Space Program|2015|m|d|t|u|f|z|pk|Roket kurup uzaya göndermeye çalışırsın. Çoğu kez patlar.",
+"Factorio|2020|m|d|tc|u|f|rz|pk|Bir gezegende fabrika kurar, otomasyonu büyütürsün.",
+"Untitled Goose Game|2019|p|s|t|k|s|r|pk|Köyde ortalığı karıştıran bir kaz.",
+"Unpacking|2021|p|s|t|k|s|r|pk|Kutulardan eşyaları çıkararak bir kişinin hayatını anlarsın.",
+"A Short Hike|2019|a|s|t|k|s|r|pk|Küçük bir dağa tırmanan kuşun sakin macerası.",
+"Gris|2018|p|s|t|k|s|r|pkm|Çok güzel çizilmiş, sözsüz bir platform macerası.",
+"Ori and the Blind Forest|2015|p|a|t|k|f|z|pk|Büyülü bir ormanda kaçış ve duygusal bir hikâye.",
+"Monument Valley|2014|p|s|t|k|s|r|m|İmkânsız mimarilerde yürüyen bir karakterle sakin bir bulmaca.",
+"Clash Royale|2016|s|a|c|k|s|rz|m|Kart destenle üç dakikalık arena savaşları.",
+"Brawl Stars|2018|n|a|c|k|s|rz|m|Kısa maçlarla mobilde hızlı çatışmalar.",
+"PUBG Mobile|2018|n|a|c|k|g|z|m|Büyük bir haritada son kişi kalana kadar savaşırsın.",
+"Subway Surfers|2012|p|a|t|k|s|r|m|Tren raylarında koşup engellerden kaçarsın.",
+"Pokémon GO|2016|a|s|c|k|s|r|m|Gerçek dünyada yürüyüp Pokémon yakalarsın.",
+"Uncharted 4: A Thief's End|2016|a|a|t|u|g|r|k|Define avcısı Nathan Drake'in sinematik son macerası.",
+"God of War|2018|a|ad|t|u|f|rz|pk|Kratos ve oğlu İskandinav diyarlarında.",
+"Marvel's Spider-Man|2018|a|a|t|u|g|r|pk|New York semalarında ağ atarak suçlularla savaşırsın.",
+"Horizon Zero Dawn|2017|ar|ad|t|u|f|rz|pk|Robot canavarlarla dolu doğa dünyasında yetenekli bir avcı.",
+"Ghost of Tsushima|2020|a|ds|t|u|g|rz|pk|Moğol istilası sırasında Japonya'da bir samurayın yolculuğu.",
+"Assassin's Creed II|2009|a|ad|t|u|g|r|pk|Rönesans İtalya'sında bir suikastçının intikam hikâyesi.",
+"Assassin's Creed Odyssey|2018|ar|ad|t|u|g|r|pk|Antik Yunanistan'da bir paralı askerin açık dünya macerası.",
+"Batman: Arkham City|2011|a|a|t|u|g|r|pk|Gotham'ın bir bölümü hapishaneye dönüşmüş. Batman içeride.",
+"Mortal Kombat 11|2019|a|a|c|k|f|rz|pk|Sert dövüşler ve zaman çarpıklığıyla bir dövüş oyunu.",
+"Street Fighter 6|2023|a|a|c|k|g|z|pk|Dövüş oyunlarının klasiği, yeni bir sürüm.",
+"Tekken 7|2017|a|a|c|k|f|z|pk|Üç boyutlu dövüş. Hikâye ve kapışmalar.",
+"Left 4 Dead 2|2009|n|a|c|k|g|r|pk|Dört kişi zombi sürüsünde hayatta kalır.",
+"Borderlands 2|2012|n|a|tc|u|f|r|pk|Esprili, renkli, silahlı bir ganimet avı.",
+"Rainbow Six Siege|2015|n|ad|c|k|g|z|pk|Takım halinde bina içi taktik çatışmaları.",
+"Lethal Company|2023|k|d|c|k|f|rz|p|Dört arkadaş metruk uydulardan hurda toplar. Korku ve komedi iç içe.",
+"Helldivers 2|2024|n|a|c|ku|f|rz|pk|Dört kişilik ekiple galaksi böcek ordularına karşı.",
+"Palworld|2024|am|s|tc|u|s|r|pk|Yaratıkları yakala, kullan, çalıştır. Hayatta kalma ve fabrikalar.",
+"Hogwarts Legacy|2023|r|sd|t|u|f|r|pk|Hogwarts'ta öğrenci olarak büyü yap. Açık dünya.",
+"Sea of Thieves|2018|a|s|c|u|s|r|pk|Arkadaşlarınla korsan gemisi işletirsin.",
+"Hollow Knight: Silksong|2025|ap|ad|t|u|f|z|pk|Hollow Knight'ın devamı. Hornet'in yeni krallığı.",
+"Clair Obscur: Expedition 33|2025|r|d|t|u|f|rz|pk|Her yıl belli bir yaşı silen Ressam'a karşı yola çıkan keşif ekibinin sıra tabanlı hikâyesi.",
+"Black Myth: Wukong|2024|ar|a|t|u|f|z|pk|Çin mitolojisinden esinlenen zorlu bir aksiyon rol oyunu.",
+"Stray|2022|a|s|t|k|f|r|pk|Siberpunk bir şehirde kaybolan kedinin yolculuğu.",
+"Cult of the Lamb|2022|a|a|t|k|s|rz|pk|Tarikat kuran sevimli bir kuzu ve zindan temizliği.",
+"Balatro|2024|s|d|t|k|s|rz|pkm|Poker eliyle oynanan roguelike kart oyunu.",
+"Lies of P|2023|ar|a|t|u|f|z|pk|Pinokyo'dan esinlenen karanlık aksiyon rol oyunu.",
+"Death Stranding|2019|a|s|t|u|f|r|pk|Yıkılmış Amerika'da yük taşıyan bir kurye.",
+"Control|2019|a|a|t|ku|f|r|pk|Gizemli bir federal binada paranormal tehditlerle savaşırsın.",
+"Outer Wilds|2019|ap|d|t|k|f|r|pk|Yirmi iki dakikada patlayan bir güneş sisteminde döngüyü çözersin.",
+"Return of the Obra Dinn|2018|p|d|t|k|g|rz|pk|Batan geminin mürettebatına ne olduğunu tek tek çözersin."
+];
+OYUN_RAW = OYUN_RAW.concat([
+"Portal|2007|p|d|t|k|f|r|pk|İlk Portal: kısa, zeki ve esprili bir bulmaca oyunu.",
+"Bastion|2011|ar|a|t|k|f|r|pk|Anlatıcının sesiyle ilerleyen, yıkılmış bir dünyada aksiyon rol oyunu.",
+"Transistor|2014|ar|ad|t|k|f|r|pk|Siberpunk bir şehirde konuşan bir kılıçla savaşırsın.",
+"Hotline Miami|2012|a|a|t|k|g|z|pk|80'ler neon estetiğinde, tek vuruşta öldüğün hızlı bir şiddet oyunu.",
+"Spelunky 2|2020|p|a|tc|k|s|z|pk|Mağaralarda tuzaklar ve hazinelerle dolu zorlu bir keşif.",
+"Super Meat Boy|2010|p|a|t|k|s|z|pk|Çok hızlı ve çok zor bir platform oyunu.",
+"Rayman Legends|2013|p|a|tc|k|s|rz|pk|Renkli, müzikli ve dört kişiye kadar oynanabilen platform oyunu.",
+"Crash Bandicoot N. Sane Trilogy|2017|p|a|t|k|s|rz|pk|Üç klasik Crash oyununun yenilenmiş hali.",
+"Sonic Mania|2017|p|a|t|k|s|rz|pk|90'ların Sonic oyunlarına sevgi dolu bir selam.",
+"The Binding of Isaac: Rebirth|2014|ap|a|t|k|f|z|pk|Tuhaf ve karanlık, her seferinde farklı bir zindan oyunu.",
+"Risk of Rain 2|2020|n|a|c|k|f|rz|pk|Giderek zorlaşan gezegende arkadaşlarla hayatta kalma.",
+"Deep Rock Galactic|2020|n|a|c|k|f|rz|pk|Cücelerle uzayda maden kazma ve böcek savaşı.",
+"Raft|2022|am|s|tc|u|s|r|p|Okyanusta bir sal üzerinde hayatta kalıp genişletirsin.",
+"ARK: Survival Evolved|2017|am|ad|c|u|f|rz|pk|Dinozorların yaşadığı adada hayatta kalıp onları evcilleştirirsin.",
+"No Man's Sky|2016|am|s|tc|u|f|r|pk|Sonsuz bir galakside keşif, ticaret ve hayatta kalma.",
+"Starfield|2023|r|d|t|u|f|r|pk|Bethesda'dan bir uzay rol oyunu.",
+"Dragon Age: Inquisition|2014|r|d|t|u|f|r|pk|Gökyüzünde açılan yarığı kapatmak için bir ordu kurarsın.",
+"Divinity: Original Sin 2|2017|r|d|tc|u|f|rz|pk|Sıra tabanlı savaş ve geniş seçim özgürlüğü olan bir rol oyunu.",
+"Diablo IV|2023|r|a|tc|u|f|rz|pk|Karanlık dünyada ganimet avı ve şeytanlarla savaş.",
+"Path of Exile|2013|r|a|tc|u|f|z|pk|Çok geniş yetenek ağacıyla derin, ücretsiz bir aksiyon rol oyunu.",
+"Monster Hunter: World|2018|ar|ad|c|u|f|rz|pk|Dev canavarları arkadaşlarınla avlarsın.",
+"Nioh 2|2020|ar|a|t|u|f|z|pk|Sengoku dönemi Japonya'sında zorlu bir aksiyon rol oyunu.",
+"Devil May Cry 5|2019|a|a|t|k|f|rz|pk|Stilli kılıç ve silah dövüşleri.",
+"Hi-Fi Rush|2023|a|a|t|k|s|r|pk|Ritme göre dövüşülen, renkli bir aksiyon oyunu.",
+"Metal Gear Solid V: The Phantom Pain|2015|a|ad|t|u|g|rz|pk|Açık dünyada gizlilik ve strateji.",
+"Hitman World of Assassination|2016|a|d|t|u|g|rz|pk|Geniş haritalarda yaratıcı suikastlar planlarsın.",
+"Dishonored|2012|a|d|t|ku|f|r|pk|Büyülü güçlerle gizlilik ve suikast.",
+"Deus Ex: Human Revolution|2011|ar|d|t|u|f|r|pk|Geleceğin siberpunk dünyasında seçimlerin önemli olduğu bir macera.",
+"Prey|2017|n|d|t|u|f|r|pk|Uzay istasyonunda şekil değiştiren yaratıklara karşı hayatta kalma.",
+"Wolfenstein II: The New Colossus|2017|n|a|t|ku|g|rz|pk|Nazilerin Amerika'yı işgal ettiği bir alternatif tarih.",
+"Titanfall 2|2016|n|a|tc|k|f|rz|pk|Dev robotlar ve duvar koşusuyla hızlı bir nişancı.",
+"Overwatch 2|2022|n|a|c|k|f|rz|pk|Kahramanlarla oynanan takım tabanlı nişancı.",
+"Team Fortress 2|2007|n|a|c|k|s|r|p|Çizgi film görünümlü, sınıf tabanlı takım nişancısı.",
+"Destiny 2|2017|n|a|tc|u|f|rz|pk|Bilim kurgu dünyasında ganimet avı ve ortak görevler.",
+"Warframe|2013|an|a|tc|u|f|rz|pk|Uzay ninja robot savaşçılarıyla ücretsiz bir aksiyon oyunu.",
+"RimWorld|2018|s|d|t|u|f|rz|p|Uzak bir gezegende yaşayan kolonicilerin hikâyesini yönetirsin.",
+"Frostpunk|2018|s|d|t|ku|g|z|pk|Buz çağında son şehri ayakta tutmaya çalışırsın.",
+"Anno 1800|2019|s|s|t|u|g|rz|p|Sanayi devrimi çağında adalar arasında ticaret ve şehir kurma.",
+"Total War: Warhammer III|2022|s|d|tc|u|f|z|p|Fantastik dünyada büyük ölçekli savaşlar.",
+"Northgard|2018|s|d|tc|ku|f|rz|pk|Vikinglerle yeni bir kıtada köy yönetimi ve savaş.",
+"Into the Breach|2018|s|d|t|k|f|rz|pk|Küçük ızgarada hamleleri önceden planladığın bir mech oyunu.",
+"Hearthstone|2014|s|d|c|k|f|rz|pm|Warcraft evreninde kart savaşı.",
+"Monster Train|2020|s|d|t|k|f|rz|p|Roguelike kart oyunu. Üç katlı bir trende savunma yaparsın.",
+"Tunic|2022|ap|d|t|k|s|rz|pk|Küçük bir tilkinin gizemli bir dünyadaki macerası.",
+"Sifu|2022|a|a|t|k|g|z|pk|Kung fu ile intikam, yaşlandıkça güçlenen bir sistemle.",
+"Neon White|2022|p|a|t|k|f|z|pk|Hızlı kart tabanlı bir koşu ve nişan oyunu.",
+"Ghostrunner|2020|a|a|t|k|f|z|pk|Siberpunk dünyada kılıçlı, tek vuruşta ölünen koşu ve dövüş.",
+"Katana ZERO|2019|a|a|t|k|g|z|pk|Neon renklerde, tek vuruşta ölünen bir aksiyon platform.",
+"Pizza Tower|2023|p|a|t|k|s|z|p|Çılgın, hızlı ve çizgi film tarzı bir platform oyunu.",
+"Blasphemous|2019|ap|ad|t|u|f|z|pk|Karanlık dini temalı bir metroidvania.",
+"Firewatch|2016|a|d|t|k|g|r|pk|Wyoming ormanında bir yangın gözetleme kulesinde geçen bir hikâye.",
+"What Remains of Edith Finch|2017|p|d|t|k|g|r|pk|Bir ailenin evinde her üyenin hikâyesini yaşarsın.",
+"Life is Strange|2015|a|d|t|u|g|r|pk|Zamanı geri saran bir lise öğrencisinin seçimleri.",
+"Detroit: Become Human|2018|a|d|t|u|f|r|pk|Üç android karakterin hikâyesi ve seçimlerin sonuçları.",
+"The Walking Dead: The Telltale Series|2012|a|d|t|u|g|r|pk|Zombi dünyasında seçimlerin ağır sonuçları olan bir hikâye.",
+"Mafia: Definitive Edition|2020|a|a|t|u|g|r|pk|1930'ların Amerikası'nda bir mafya hikâyesi.",
+"Far Cry 3|2012|an|a|t|u|g|r|pk|Tropikal bir adada çılgın bir haydut ve hayatta kalma macerası.",
+"Saints Row IV|2013|a|a|tc|u|f|r|pk|Absürt ve eğlenceli, süper güçlü bir açık dünya.",
+"Burnout Paradise|2008|y|a|tc|k|g|r|pk|Kaza ve hız odaklı açık dünya yarış.",
+"Trackmania|2020|y|a|c|k|g|rz|p|Saniyelerin peşinde, bölümleri tekrar tekrar denersin.",
+"Assetto Corsa|2014|y|s|tc|k|g|z|pk|Gerçekçi sürüş fiziği ve araç modları.",
+"Football Manager 2024|2023|s|d|t|u|g|rz|p|Bir futbol kulübünü yönetirsin. Saatler uçar.",
+"Stumble Guys|2021|y|a|c|k|s|r|pm|Mobilde de oynanan, engelli yarış parti oyunu.",
+"Minecraft Dungeons|2020|ar|a|tc|k|s|r|pk|Minecraft evreninde kolay bir zindan tarayıcı.",
+"LEGO Star Wars: The Complete Saga|2007|a|a|tc|u|s|r|pk|Lego parçalarıyla Star Wars filmlerini oynarsın.",
+"Spiritfarer|2020|m|s|t|u|s|r|pk|Ölenlerin ruhlarını taşıyan sakin bir gemi.",
+"Coffee Talk|2020|m|s|t|k|g|r|pk|Gece kafesinde sohbet eden fantastik yaratıklara kahve yaparsın.",
+"Papers, Please|2013|p|d|t|k|g|rz|pkm|Sınır kapısında bir memur olarak zor ahlaki seçimler.",
+"Phoenix Wright: Ace Attorney Trilogy|2019|p|d|t|u|s|r|pk|Mahkeme salonunda ipuçlarını birleştirdiğin bir avukat macerası.",
+"The Room|2012|p|d|t|k|f|r|pkm|Gizemli kutuları çözdüğün atmosferik bir bulmaca oyunu.",
+"Baba Is You|2019|p|d|t|u|s|z|pkm|Kuralları değiştirerek çözülen zeki bir bulmaca.",
+"The Talos Principle|2014|p|d|t|u|f|rz|pk|Felsefi bir bulmaca oyunu.",
+"The Witness|2016|p|d|t|u|f|z|pk|Gizemli bir adada çizgi bulmacaları."
+]);
+/* Albüm: sanatçı|albüm|yıl|tür(p,r,m,h,b,e,c,k,f)|ruh(n,h,s,k)|an(o,y,d,e,p)|dil(t,y,s)|ritim(y,o,h)|vokal(k,e,g,s)|popülerlik(p,k)|açıklama */
+var MUZIK_RAW = [
+"Pink Floyd|The Dark Side of the Moon|1973|r|hs|od|y|y|e|p|Kalp atışıyla açılan, baştan sona dinlenmesi gereken konsept albüm.",
+"Radiohead|OK Computer|1997|r|h|yd|y|o|e|p|Yabancılaşma ve teknoloji kaygısı üzerine, dönemin referans rock albümü.",
+"Nirvana|Nevermind|1991|r|k|e|y|h|e|p|Grunge'ın dünyaya açılan kapısı.",
+"Queen|A Night at the Opera|1975|r|n|ey|y|o|e|p|“Bohemian Rhapsody” bu albümde.",
+"The Beatles|Abbey Road|1969|rp|ns|yd|y|o|g|p|Grubun son stüdyo albümü. Kapağı bir yaya geçidinde çekildi.",
+"Led Zeppelin|Led Zeppelin IV|1971|r|k|ey|y|o|e|p|“Stairway to Heaven” bu albümde.",
+"The Rolling Stones|Exile on Main St.|1972|r|n|ye|y|o|e|k|Blues ve country'yi harmanlayan çiğ bir çift albüm.",
+"Fleetwood Mac|Rumours|1977|rp|hn|yd|y|o|g|p|Grup üyeleri ayrılırken yazılmış şarkılar.",
+"AC/DC|Back in Black|1980|r|k|e|y|h|e|p|Sert gitar riffleriyle hard rock klasiği.",
+"Metallica|Master of Puppets|1986|m|k|e|y|h|e|p|Thrash metalin başyapıtlarından biri.",
+"Guns N' Roses|Appetite for Destruction|1987|r|k|e|y|h|e|p|Sokak enerjisiyle dolu, hızlı bir hard rock albümü.",
+"Black Sabbath|Paranoid|1970|m|k|e|y|o|e|p|Heavy metal'in temel taşı.",
+"Iron Maiden|The Number of the Beast|1982|m|k|e|y|h|e|p|Destansı gitarlar ve yüksek sesli vokal.",
+"System of a Down|Toxicity|2001|m|k|e|y|h|e|p|Politik, hızlı ve aşırı enerjili alternatif metal.",
+"Pantera|Vulgar Display of Power|1992|m|k|e|y|h|e|p|Ağır ve hızlı groove metal.",
+"Rammstein|Mutter|2001|m|k|e|y|o|e|p|Almanca söylenen ağır ve dramatik endüstriyel metal.",
+"Tool|Lateralus|2001|m|k|e|y|o|e|k|Uzun ve karmaşık yapılarıyla progresif metal.",
+"Linkin Park|Hybrid Theory|2000|rm|k|e|y|h|e|p|Rap ve ağır gitarı birleştiren nu metal albümü.",
+"Green Day|American Idiot|2004|r|k|e|y|h|e|p|Politik bir punk rock operası.",
+"Oasis|(What's the Story) Morning Glory?|1995|r|n|yp|y|o|e|p|Britpop'un en büyük albümlerinden biri.",
+"Arctic Monkeys|AM|2013|r|hk|yp|y|o|e|p|Gece karanlığına uygun, ağır riffli bir rock albümü.",
+"The Strokes|Is This It|2001|r|n|ye|y|h|e|p|New York'tan çıkan, kısa ve temiz garage rock.",
+"Foo Fighters|The Colour and the Shape|1997|r|k|e|y|h|e|p|Kalabalıkla birlikte söylenen gitar şarkıları.",
+"Coldplay|A Rush of Blood to the Head|2002|rp|hs|yd|y|o|e|p|Piyanolu ve büyük korolu rock. “Clocks” burada.",
+"U2|The Joshua Tree|1987|r|hs|y|y|o|e|p|Amerika'nın çölleri üzerine yazılmış, geniş sahneli bir rock albümü.",
+"The Smiths|The Queen Is Dead|1986|r|h|d|y|o|e|k|Morrissey'in kederli sözleri ve parlak gitarlar.",
+"Joy Division|Unknown Pleasures|1979|r|h|d|y|o|e|k|Post-punk'ın karanlık ve minimal klasiği.",
+"David Bowie|The Rise and Fall of Ziggy Stardust and the Spiders from Mars|1972|r|n|yp|y|o|e|p|Dünyaya gelen uzaylı bir rock yıldızı konsepti.",
+"Bob Dylan|Highway 61 Revisited|1965|rf|h|y|y|o|e|p|“Like a Rolling Stone” ile açılan folk-rock klasiği.",
+"Red Hot Chili Peppers|Californication|1999|r|n|ye|y|o|e|p|Funk ve rock'ı sıcak bir hisle birleştirir.",
+"Pearl Jam|Ten|1991|r|h|y|y|o|e|p|Seattle grunge sahnesinin duygusal yüzü.",
+"Eagles|Hotel California|1976|r|hs|y|y|y|e|p|Country rock'ın en bilinen albümlerinden biri.",
+"Dire Straits|Brothers in Arms|1985|r|s|yd|y|o|e|p|Temiz bir ses ve Mark Knopfler'ın gitarı.",
+"Rage Against the Machine|Rage Against the Machine|1992|rm|k|e|y|h|e|p|Politik rap-rock ve çarpıcı gitar riffleri.",
+"Santana|Abraxas|1970|r|ns|yd|s|o|s|p|Latin ritimli rock ve gitar solosu.",
+"Tame Impala|Currents|2015|ep|sh|yd|y|o|e|p|Sentezleyicilerle örülmüş, yolculukta dinlemelik psychedelic pop.",
+"Bon Iver|For Emma, Forever Ago|2007|f|hs|d|y|y|e|k|Ormanda bir kulübede kaydedilmiş, kırık ve sıcak bir folk albümü.",
+"Fleet Foxes|Fleet Foxes|2008|f|s|dy|y|y|g|k|Dağlık ve geniş sahneli, vokal armonili folk.",
+"Joni Mitchell|Blue|1971|f|h|d|y|y|k|p|Çıplak, kişisel ve duygusal şarkılar.",
+"Leonard Cohen|Songs of Leonard Cohen|1967|f|h|d|y|y|e|p|“Suzanne” ile başlayan, edebi ve kederli bir ilk albüm.",
+"Johnny Cash|At Folsom Prison|1968|f|k|e|y|o|e|p|Hapishanede kaydedilmiş canlı country albümü.",
+"Paul Simon|Graceland|1986|fp|n|yd|y|o|e|p|Güney Afrika ritimleriyle yapılmış neşeli bir pop-folk albümü.",
+"Bob Marley & The Wailers|Exodus|1977|f|ns|yd|y|y|e|p|Reggae'nin en bilinen albümlerinden. “One Love” ve “Jamming”.",
+"Buena Vista Social Club|Buena Vista Social Club|1997|fc|ns|d|y|y|g|p|Kübalı yaşlı müzisyenlerin yeniden bir araya geldiği, sıcak bir albüm.",
+"Daft Punk|Random Access Memories|2013|ep|n|ye|y|o|e|p|Disko ve funk'a canlı müzisyenlerle selam. “Get Lucky” burada.",
+"Daft Punk|Discovery|2001|e|n|ye|y|h|e|p|Disko örnekleriyle yapılmış, hareketli ve renkli bir elektronik albüm.",
+"Massive Attack|Mezzanine|1998|e|h|od|y|y|g|p|Karanlık ve ağır bas çizgileriyle trip hop.",
+"Aphex Twin|Selected Ambient Works 85–92|1992|e|s|od|s|o|s|k|Sakin ve katmanlı elektronik. Kulaklıkla dinlemek için.",
+"Brian Eno|Music for Airports|1978|ek|s|od|s|y|s|k|Fonda çalmak için yapılmış ambient müzik.",
+"Kraftwerk|The Man-Machine|1978|e|n|y|y|o|e|p|Robotik ritimler ve elektronik müziğin temelini atan bir grup.",
+"The Chemical Brothers|Dig Your Own Hole|1997|e|n|ye|y|h|s|p|Big beat'in gürültülü ve hareketli klasiği.",
+"The Prodigy|The Fat of the Land|1997|e|k|e|y|h|e|p|Sert ritimli ve agresif elektronik albüm.",
+"Burial|Untrue|2007|e|h|d|y|y|s|k|Gece Londra'sında yağmurlu bir dubstep atmosferi.",
+"Fred again..|Actual Life 3 (January 1 – September 9 2022)|2022|e|n|e|y|h|e|p|Anıları ve sesleri örnekleyen duygusal elektronik.",
+"Charli xcx|Brat|2024|ep|nk|ep|y|h|k|p|Hyperpop ve kulüp sound'uyla 2024 yazının albümü.",
+"Michael Jackson|Thriller|1982|pb|n|ep|y|o|e|p|Dünyanın en çok satan albümlerinden biri. Her şarkısı bir hit.",
+"Prince|Purple Rain|1984|pb|n|ye|y|o|e|p|Funk, rock ve pop'u birleştiren albüm.",
+"Madonna|Like a Prayer|1989|p|n|ye|y|o|k|p|Pop yıldızının hem dans hem de ruh hâli albümü.",
+"Adele|21|2011|p|h|d|y|y|k|p|Ayrılık üzerine güçlü bir ses ve sade aranjmanlar.",
+"Amy Winehouse|Back to Black|2006|pb|h|yd|y|o|k|p|Soul, caz ve 60'lar pop'u. Hüzünlü ama canlı.",
+"Dua Lipa|Future Nostalgia|2020|p|n|ep|y|h|k|p|Disko esintili dans pop. Spor ve temizlik müziği.",
+"Billie Eilish|When We All Fall Asleep, Where Do We Go?|2019|pe|h|d|y|y|k|p|Fısıltıyla söylenen karanlık pop.",
+"The Weeknd|After Hours|2020|pb|h|ye|y|o|e|p|Gece sürüşü hissi veren synth-pop.",
+"Taylor Swift|1989|2014|p|n|ye|y|o|k|p|Gitar yerine sentezleyici ağırlıklı pop albümü.",
+"Taylor Swift|Folklore|2020|fp|hs|d|y|y|k|p|Akustik, hikâye anlatan sakin bir albüm.",
+"Lana Del Rey|Born to Die|2012|p|h|yd|y|y|k|p|Sinematik ve melankolik pop.",
+"Beyoncé|Lemonade|2016|bp|k|yd|y|o|k|p|Ayrılık, öfke ve affetme üzerine görsel bir albüm.",
+"Rihanna|Anti|2016|pb|h|yd|y|o|k|p|Tek hit peşinde koşmayan, daha derin bir R&B albümü.",
+"Ariana Grande|Thank U, Next|2019|pb|n|ep|y|o|k|p|Ayrılıklar ve kendini bulmak üzerine pop-R&B.",
+"Olivia Rodrigo|Sour|2021|pr|hk|y|y|o|k|p|İlk aşk acısını pop-punk ile anlatır.",
+"Harry Styles|Fine Line|2019|p|n|y|y|o|e|p|Yumuşak ve rock'a göz kırpan bir pop albümü.",
+"Chappell Roan|The Rise and Fall of a Midwest Princess|2023|p|n|ep|y|h|k|p|Dans pop ve drama. Gece kulübü için.",
+"ABBA|Arrival|1976|p|n|ye|y|o|g|p|“Dancing Queen” bu albümde.",
+"Stevie Wonder|Songs in the Key of Life|1976|b|n|yd|y|o|e|p|Soul ve funk'ın en kapsamlı albümlerinden. İki plak.",
+"Marvin Gaye|What's Going On|1971|b|hs|d|y|y|e|p|Savaş, yoksulluk ve umut üzerine akıcı bir soul albümü.",
+"Erykah Badu|Baduizm|1997|b|s|d|y|y|k|k|Neo-soul'un kapılarını açan sıcak, jazzy bir albüm.",
+"D'Angelo|Voodoo|2000|b|s|d|y|y|e|k|Yavaş akan, bas ağırlıklı neo-soul.",
+"Frank Ocean|Blonde|2016|b|hs|dy|y|y|e|p|Dağınık, kişisel ve atmosferik bir R&B albümü.",
+"SZA|SOS|2022|b|h|yd|y|o|k|p|R&B ile hip hop ve rock'ı harmanlayan bir albüm.",
+"Shakira|Laundry Service|2001|p|n|ye|y|o|k|p|“Whenever, Wherever” ve Latin pop'un dünyaya açılışı.",
+"Rosalía|Motomami|2022|pe|nk|e|y|o|k|k|Flamenko, reggaeton ve elektronik karışımı.",
+"Bad Bunny|Un Verano Sin Ti|2022|hp|n|ep|y|o|e|p|Karayipler'in yaz hissi, reggaeton ve Latin pop.",
+"Kendrick Lamar|To Pimp a Butterfly|2015|h|hk|yd|y|o|e|p|Hip hop'ı caz ve funk ile harmanlayan yoğun bir albüm.",
+"Kendrick Lamar|good kid, m.A.A.d city|2012|h|h|y|y|o|e|p|Compton'da bir gencin bir günü, roman gibi anlatılmış.",
+"Nas|Illmatic|1994|h|h|y|y|o|e|p|New York hip hop'ının başyapıtı, kısa ve yoğun.",
+"The Notorious B.I.G.|Ready to Die|1994|h|k|ye|y|o|e|p|Brooklyn'den sert ve yaratıcı bir hip hop albümü.",
+"2Pac|All Eyez on Me|1996|h|k|e|y|o|e|p|Çift albüm olarak yayınlandı. Batı yakası hip hop'ının önemli bir eseri.",
+"OutKast|Speakerboxxx/The Love Below|2003|hp|n|ep|y|o|g|p|İki albümlük, rap ve pop arasında gezinen renkli bir çalışma. “Hey Ya!” burada.",
+"Kanye West|My Beautiful Dark Twisted Fantasy|2010|h|k|e|y|o|e|p|Büyük prodüksiyonlu, abartılı bir hip hop operası.",
+"Jay-Z|The Blueprint|2001|h|n|y|y|o|e|p|Soul örneklemeleriyle hip hop klasiği.",
+"Eminem|The Marshall Mathers LP|2000|h|k|e|y|h|e|p|Sert sözleri ve hızlı flow'uyla bilinen bir rap albümü.",
+"Travis Scott|Astroworld|2018|h|n|e|y|o|e|p|Atmosferik, tuhaf, festival havasında bir trap albümü.",
+"Tyler, the Creator|IGOR|2019|hb|hn|yd|y|o|e|p|Aşk acısını melodik bir hip hop ve funk ile anlatır.",
+"Drake|Take Care|2011|hb|h|yd|y|y|e|p|Gece sürüşüne uygun, melankolik rap ve R&B.",
+"Wu-Tang Clan|Enter the Wu-Tang (36 Chambers)|1993|h|k|e|y|o|g|p|Staten Island'dan dokuz rapçinin çiğ ve ünlü ilk albümü.",
+"A Tribe Called Quest|The Low End Theory|1991|hc|n|yd|y|o|e|k|Caz örneklemeleriyle yapılmış akıcı bir hip hop albümü.",
+"Lauryn Hill|The Miseducation of Lauryn Hill|1998|hb|hn|yd|y|o|k|p|Hip hop, soul ve reggae'yi birleştiren tek albüm.",
+"Miles Davis|Kind of Blue|1959|c|s|od|s|y|s|p|Cazla tanışmak isteyenlere en çok önerilen albümlerden. Yumuşak ve akıcı.",
+"John Coltrane|A Love Supreme|1965|c|s|od|s|o|s|p|Dört bölümlü, manevi bir caz albümü.",
+"Dave Brubeck Quartet|Time Out|1959|c|n|od|s|o|s|p|Alışılmadık ölçülerle yazılmış caz. “Take Five” burada.",
+"Bill Evans Trio|Waltz for Debby|1961|c|s|od|s|y|s|k|Kulüpte kaydedilmiş, sessiz ve yumuşak bir piyano trio albümü.",
+"Ella Fitzgerald ve Louis Armstrong|Ella and Louis|1956|c|ns|d|y|y|g|p|İki büyük sesin standartları birlikte söylemesi.",
+"Nina Simone|I Put a Spell on You|1965|cb|h|d|y|o|k|k|Derin ve güçlü, hem caz hem blues.",
+"Norah Jones|Come Away with Me|2002|cp|s|od|y|y|k|p|Sade, sıcak ve akustik caz-pop.",
+"Herbie Hancock|Head Hunters|1973|c|ns|y|s|o|s|k|Caz ve funk'ı birleştiren, ritmi güçlü bir albüm.",
+"Ludovico Einaudi|Una Mattina|2004|k|hs|od|s|y|s|p|Yalın piyano. Çalışırken ya da yağmurlu bir günde.",
+"Hans Zimmer|Interstellar (Film Müziği)|2014|k|hs|o|s|y|s|p|Org ve yaylılarla yükselen, geniş bir film müziği.",
+"Max Richter|The Blue Notebooks|2004|k|hs|od|s|y|s|k|Yaylı çalgılar ve sessizlikle örülmüş bir albüm.",
+"Yann Tiersen|Le Fabuleux Destin d'Amélie Poulain|2001|kf|ns|od|s|o|s|p|Amélie filminin müzikleri. Akordeon ve piyano.",
+"Barış Manço|Sözüm Meclisten Dışarı|1981|rp|n|ye|t|o|e|p|Anadolu rock ve pop ruhunu bir arada taşıyan hareketli bir klasik.",
+"Sezen Aksu|Gülümse|1991|p|h|yd|t|o|k|p|Türk pop'unun belirleyici isimlerinden birinin duygusal dönemi.",
+"Sezen Aksu|Işık Doğudan Yükselir|1995|pf|hs|yd|t|o|k|p|Anadolu halk ezgilerinin pop ile bir araya geldiği albüm.",
+"Tarkan|Ölürüm Sana|1997|p|n|ep|t|h|e|p|Dansa kaldıran bir Türk pop klasiği.",
+"Cem Karaca|Safinaz|1978|r|k|ey|t|o|e|p|Anadolu rock'ın başyapıtlarından.",
+"Ezhel|Müptezhel|2017|h|n|ey|t|o|e|p|Türkçe rap'in geniş kitlelere ulaştığı dönemin albümü.",
+"Sagopa Kajmer|Bir Pesimistin Gözyaşları|2004|h|h|d|t|y|e|k|Karamsar ve içe dönük Türkçe rap. Yalnız gecelere göre.",
+"Ceza|Med Cezir|2004|h|k|e|t|o|e|p|Sert sözleriyle Türkçe rap'in popülerleştiği yıllardan.",
+"Gaye Su Akyol|Hologram İmparatorluğu|2016|r|hs|yd|t|o|k|k|Anadolu psychedelic rock ve şarkıcının hipnotik sesi."
+];
+MUZIK_RAW = MUZIK_RAW.concat([
+"Radiohead|In Rainbows|2007|r|hs|yd|y|o|e|p|“Ne istersen öde” diye yayınlanan, sıcak ve ince işlenmiş bir albüm.",
+"Radiohead|Kid A|2000|re|h|od|y|y|e|p|Gitarı bırakıp elektronik sese kayan, soğuk ve atmosferik bir albüm.",
+"Pink Floyd|Wish You Were Here|1975|r|hs|d|y|y|e|p|Kaybolan bir arkadaşa ithaf edilmiş uzun ve duygusal parçalar.",
+"The Velvet Underground & Nico|The Velvet Underground & Nico|1967|r|sh|d|y|o|g|k|Alternatif rock'ın doğum belgesi.",
+"David Bowie|Heroes|1977|r|h|y|y|o|e|p|Berlin döneminin gerilimli ve deneysel rock albümü.",
+"Talking Heads|Remain in Light|1980|r|n|ye|y|o|e|k|Afrika ritimlerini new wave ile birleştiren, dans edilesi bir albüm.",
+"Sade|Love Deluxe|1992|b|s|d|y|y|k|p|Yumuşak, sakin ve sofistike soul.",
+"Portishead|Dummy|1994|e|h|d|y|y|k|k|Karanlık ve sinematik trip hop.",
+"Björk|Homogenic|1997|e|h|od|y|o|k|k|Yaylılar ve elektronik ritimlerle Björk'ün en bütünlüklü albümü.",
+"Kate Bush|Hounds of Love|1985|p|h|d|y|o|k|k|Üst düzey prodüksiyonlu, yaratıcı ve duygusal pop.",
+"Depeche Mode|Violator|1990|e|h|y|y|o|e|p|Karanlık synth-pop klasiği. “Enjoy the Silence” burada.",
+"New Order|Power, Corruption & Lies|1983|e|n|ye|y|o|e|k|Rock ile elektronik dans müziğinin buluşması.",
+"The Cure|Disintegration|1989|r|h|d|y|y|e|p|Yoğun, hüzünlü ve uzun gitar duvarları.",
+"Tears for Fears|Songs from the Big Chair|1985|p|h|y|y|o|e|p|80'lerin synth-pop'u. “Everybody Wants to Rule the World” burada.",
+"Whitney Houston|Whitney Houston|1985|p|n|ye|y|o|k|p|Güçlü bir sesin pop ve R&B ile ilk büyük adımı.",
+"Mariah Carey|Daydream|1995|pb|n|y|y|o|k|p|Yüksek notalar ve 90'ların R&B-pop sound'u.",
+"Janet Jackson|Rhythm Nation 1814|1989|pb|nk|ye|y|h|k|p|Dans ve toplumsal mesajı birleştiren funk-pop.",
+"Lady Gaga|The Fame Monster|2009|ep|n|ye|y|h|k|p|Elektro pop ve dans pist hitleriyle dolu.",
+"Bruno Mars|24K Magic|2016|pb|n|ep|y|h|e|p|90'lar funk ve R&B'sine selam eden parti albümü.",
+"Ed Sheeran|÷ (Divide)|2017|p|n|y|y|o|e|p|Akustik ve pop şarkılar. “Shape of You” bu albümde.",
+"Post Malone|Beerbongs & Bentleys|2018|h|h|y|y|o|e|p|Melodik trap ve pop karışımı.",
+"Doja Cat|Planet Her|2021|pb|n|ep|y|o|k|p|Rap, pop ve funk'ı oynak biçimde birleştirir.",
+"J. Cole|2014 Forest Hills Drive|2014|h|h|y|y|o|e|p|Konuk sanatçısız, kişisel bir hip hop albümü.",
+"Childish Gambino|Awaken, My Love!|2016|b|h|d|y|y|e|k|70'lerin funk ve soul'una selam. “Redbone” burada.",
+"Gorillaz|Demon Days|2005|e|hn|y|y|o|g|p|Çizgi film grubundan karanlık bir elektronik-hip hop-rock harmanı.",
+"Muse|Origin of Symmetry|2001|r|k|e|y|h|e|p|Dramatik, gürültülü ve teatral bir rock albümü.",
+"Queens of the Stone Age|Songs for the Deaf|2002|r|k|e|y|h|e|k|Çöl rock'ı ve ağır gitar riffleri.",
+"Deftones|White Pony|2000|rm|hk|e|y|o|e|k|Ağır ve atmosferik alternatif metal.",
+"Blink-182|Enema of the State|1999|r|n|e|y|h|e|p|Pop-punk'ın hızlı ve esprili klasiği.",
+"Evanescence|Fallen|2003|rm|h|y|y|o|k|p|Gotik rock ve opera tadında vokal.",
+"Bruce Springsteen|Born to Run|1975|r|n|y|y|o|e|p|Amerikan rock'ının geniş sahneli klasiği.",
+"Neil Young|Harvest|1972|f|s|dy|y|y|e|p|Yumuşak country-folk-rock. “Heart of Gold” burada.",
+"Simon & Garfunkel|Bridge over Troubled Water|1970|f|hs|d|y|y|g|p|Zarif iki sesli folk-pop. “The Boxer” burada.",
+"Carole King|Tapestry|1971|f|s|d|y|y|k|p|Kendi sesi ve piyanosuyla sıcak şarkılar.",
+"The Doors|The Doors|1967|r|k|yd|y|o|e|p|Orgun öne çıktığı psychedelic rock. “Light My Fire” burada.",
+"Jimi Hendrix Experience|Are You Experienced|1967|r|n|y|y|o|e|p|Elektro gitarı yeniden tanımlayan bir ilk albüm.",
+"Jeff Buckley|Grace|1994|r|h|d|y|y|e|p|Etkileyici bir ses ve duygusal şarkılar.",
+"Nick Drake|Pink Moon|1972|f|hs|d|y|y|e|k|Çıplak akustik gitar ve fısıltılı vokal.",
+"Sigur Rós|Ágætis byrjun|1999|r|hs|od|y|y|e|k|İzlandaca ve uydurma bir dille söylenen, geniş sahneli post-rock.",
+"Explosions in the Sky|The Earth Is Not a Cold Dead Place|2003|r|hs|od|s|y|s|k|Sözsüz, yükselen ve duygusal post-rock.",
+"Nils Frahm|Spaces|2013|k|s|od|s|y|s|k|Canlı kaydedilmiş piyano ve sentezleyici parçaları.",
+"Ryuichi Sakamoto|async|2017|k|hs|od|s|y|s|k|Sakin, dingin ve yavaş akan bir enstrümantal albüm.",
+"Joe Hisaishi|Ruhların Kaçışı (Film Müziği)|2001|k|ns|od|s|o|s|p|Studio Ghibli'nin besteci ustasından melodik piyano ve orkestra.",
+"Vangelis|Blade Runner (Film Müziği)|1994|k|h|od|s|y|s|k|Sentezleyici ağırlıklı, yağmurlu geleceğin müziği.",
+"Ennio Morricone|İyi, Kötü ve Çirkin (Film Müziği)|1966|k|n|yd|s|o|s|p|Western müziğinin en tanınan temalarından.",
+"Tarkan|Karma|2001|p|n|ye|t|o|e|p|Anadolu ezgilerini pop ile birleştirdiği albüm.",
+"Erkin Koray|Elektronik Türküler|1974|r|nh|y|t|o|e|k|Anadolu türkülerini psychedelic rock ile yorumlayan öncü bir albüm.",
+"Şebnem Ferah|Kadın|1996|r|h|y|t|o|k|p|Türk rock'ının güçlü kadın sesi."
+]);
+/* Yaklaşık IMDb puanları (el ile girildi, zamanla değişir). Puanından emin olmadığım filmler listede yok. */
+var IMDB = {
+"Hababam Sınıfı": 9.2, "Eşkıya": 8.0, "Babam ve Oğlum": 8.2, "Organize İşler": 8.1, "G.O.R.A.": 8.0,
+"Bir Zamanlar Anadolu'da": 7.7, "Kış Uykusu": 8.0,
+"Esaretin Bedeli": 9.3, "Baba": 9.2, "Baba 2": 9.0, "Yedi": 8.6, "Forrest Gump": 8.8, "Yeşil Yol": 8.6,
+"Schindler'in Listesi": 9.0, "Hayat Güzeldir": 8.6, "Dövüş Kulübü": 8.8, "Leon": 8.5, "Kuzuların Sessizliği": 8.6,
+"Pulp Fiction": 8.9, "Sıkı Dostlar": 8.7, "Gladyatör": 8.5, "Cesur Yürek": 8.3, "Kayıp Kız": 8.1, "Joker": 8.4,
+"Parazit": 8.5, "Oldboy": 8.3, "Kara Şövalye": 9.0, "Başlangıç": 8.8, "Yıldızlararası": 8.7, "Matrix": 8.7,
+"Terminatör 2: Mahşer Günü": 8.6, "Yüzüklerin Efendisi: Yüzük Kardeşliği": 8.9, "Harry Potter ve Felsefe Taşı": 7.6,
+"Yıldız Savaşları: Yeni Bir Umut": 8.6, "Jurassic Park": 8.2, "Geleceğe Dönüş": 8.5,
+"Indiana Jones: Kutsal Hazine Avcıları": 8.4, "Alien": 8.5, "Blade Runner": 8.1, "Mad Max: Fury Road": 8.1,
+"Dune": 8.0, "Sil Baştan": 8.3, "Truman Show": 8.2, "Amélie": 8.3, "Ruhların Kaçışı": 8.6, "Prenses Mononoke": 8.3,
+"Yürüyen Şato": 8.2, "Komşum Totoro": 8.1, "Senin Adın": 8.4, "Akira": 8.0, "Coco": 8.4, "Oyuncak Hikâyesi": 8.3,
+"Yukarı Bak": 8.3, "WALL·E": 8.4, "Ratatouille": 8.1, "Muhteşem Aile": 8.0, "Aslan Kral": 8.5, "Shrek": 7.9,
+"Kayıp Balık Nemo": 8.2, "Ters Yüz": 8.1, "Örümcek Adam: Örümcek Evreninde": 8.4, "Soul": 8.0, "Kung Fu Panda": 7.6,
+"Ejderhanı Nasıl Eğitirsin": 8.1, "Çılgın Hırsız": 7.6, "Zootropolis": 8.0, "Grand Budapest Hotel": 8.1,
+"Küçük Bayan Sunshine": 7.8, "Bıçaklar Çekildi": 7.9, "Evde Tek Başına": 7.7, "Hayalet Avcıları": 7.8,
+"The Big Lebowski": 8.1, "Felekten Bir Gece": 7.7, "Intouchables": 8.5, "Bayan Doubtfire": 7.1, "Titanic": 7.9,
+"Notting Hill": 7.2, "Gün Doğmadan": 8.1, "Kazablanka": 8.5, "Roma Tatili": 8.0, "Psycho": 8.5, "Arka Pencere": 8.5,
+"Cinnet": 8.4, "Get Out": 7.8, "Hereditary": 7.3, "Sessiz Bir Yer": 7.5, "Çığlık": 7.4, "Memento": 8.4,
+"Prestij": 8.5, "Shutter Island": 8.2, "Zodiac": 7.7, "Top Gun: Maverick": 8.2, "Oppenheimer": 8.3, "Barbie": 6.8,
+"Her Şey Her Yerde Aynı Anda": 7.8, "Whiplash": 8.5, "La La Land": 8.0, "Bohemian Rhapsody": 7.9,
+"Denizin Dişleri": 8.1, "E.T.": 7.9, "Rocky": 8.1, "Busan'a Tren": 7.6, "Er Ryan'ı Kurtarmak": 8.6, "1917": 8.2,
+"Dunkirk": 7.8, "Piyanist": 8.5, "Taksi Şoförü": 8.2, "The Social Network": 7.8, "Avengers: Endgame": 8.4,
+"Iron Man": 7.9, "Black Panther": 7.3, "John Wick": 7.4, "Görevimiz Tehlike: Fallout": 7.7, "Casino Royale": 8.0,
+"Skyfall": 7.8, "Yerçekimi": 7.7, "Geliş": 7.9, "Ex Machina": 7.7, "Karayip Korsanları: Siyah İnci'nin Laneti": 8.1,
+"Amadeus": 8.3, "Müziğin Sesi": 8.1, "Mamma Mia!": 6.5, "En Büyük Showman": 7.5, "Ölü Ozanlar Derneği": 8.1,
+"Good Will Hunting": 8.3, "Akıl Oyunları": 8.2, "Rain Man": 8.0, "Into the Wild": 8.1, "Pi'nin Yaşamı": 7.9,
+"Slumdog Millionaire": 7.9, "3 Idiots": 8.4, "Dangal": 8.3, "Cinema Paradiso": 8.5, "Pan'ın Labirenti": 8.2,
+"Tanrı Şehri": 8.6, "Yedi Samuray": 8.6, "Her": 8.0, "Moonlight": 7.4, "Birdman": 7.5, "Lost in Translation": 7.7,
+"Midnight in Paris": 7.7, "American Beauty": 8.3, "Fargo": 8.1, "No Country for Old Men": 8.2, "Reservoir Dogs": 8.3,
+"Django Unchained": 8.4, "Soysuzlar Çetesi": 8.4, "Kill Bill: Vol. 1": 8.2, "Heat": 8.3, "Scarface": 8.3,
+"The Departed": 8.5, "The Wolf of Wall Street": 8.2, "Catch Me If You Can": 8.1, "Good Bye, Lenin!": 7.7,
+"Başkalarının Hayatı": 8.4, "Run Lola Run": 7.6
+};
+Object.assign(IMDB, {
+"12 Kızgın Adam": 9.0, "Şahane Hayat": 8.6, "Vertigo": 8.3, "Citizen Kane": 8.3, "Sunset Boulevard": 8.4,
+"Tokyo Story": 8.1, "Lawrence of Arabia": 8.3, "Apocalypse Now": 8.4, "Full Metal Jacket": 8.3, "Aliens": 8.4,
+"Terminatör": 8.1, "Zor Ölüm": 8.2, "Raging Bull": 8.1, "Otomatik Portakal": 8.3, "2001: A Space Odyssey": 8.3,
+"Dr. Strangelove": 8.4, "Bir Zamanlar Amerika": 8.3, "İyi, Kötü ve Çirkin": 8.8, "Bir Zamanlar Batı'da": 8.5,
+"Prisoners": 8.1, "Sicario": 7.6, "Nightcrawler": 7.8, "Mystic River": 7.9, "Altıncı His": 8.2,
+"Olağan Şüpheliler": 8.5, "L.A. Confidential": 8.2, "Chinatown": 8.1, "Spotlight": 8.1, "The Revenant": 8.0,
+"Blade Runner 2049": 8.0, "Avatar": 7.9, "Moon": 7.8, "District 9": 7.9, "Marslı": 8.0, "Edge of Tomorrow": 7.9,
+"Oyuncak Hikâyesi 3": 8.3, "Sevimli Canavarlar": 8.1, "Büyük Kahraman 6": 7.8, "Karlar Ülkesi": 7.4, "Vaiana": 7.6,
+"The Iron Giant": 8.1, "Ateşböceklerinin Mezarı": 8.5, "Yalnız Adam": 7.8, "Pretty Woman": 7.1, "Dirty Dancing": 7.0,
+"Not Defteri": 7.8, "500 Days of Summer": 7.7, "Superbad": 7.6, "Aptal ve Daha Aptal": 7.3, "Maske": 7.0,
+"Mean Girls": 7.1, "School of Rock": 7.1, "Ferris Bueller's Day Off": 7.8, "The Breakfast Club": 7.8, "300": 7.0,
+"Hacksaw Ridge": 8.1, "Büyük Kaçış": 8.2, "Das Boot": 8.4, "Çöküş": 8.2, "Monty Python and the Holy Grail": 8.2,
+"Bir Ayrılık": 8.3
+});
+/* Yaklaşık Steam kullanıcı değerlendirmesi etiketleri (el ile girildi, zamanla değişir). Emin olmadıklarım yok. */
+var STEAM = {
+"Stardew Valley": "Aşırı Olumlu", "Hades": "Aşırı Olumlu", "The Witcher 3: Wild Hunt": "Aşırı Olumlu",
+"Celeste": "Aşırı Olumlu", "Portal": "Aşırı Olumlu", "Portal 2": "Aşırı Olumlu", "Hollow Knight": "Aşırı Olumlu",
+"Terraria": "Aşırı Olumlu", "Baldur's Gate 3": "Aşırı Olumlu", "Half-Life 2": "Aşırı Olumlu",
+"Undertale": "Aşırı Olumlu", "Left 4 Dead 2": "Aşırı Olumlu", "The Elder Scrolls V: Skyrim": "Aşırı Olumlu",
+"Factorio": "Aşırı Olumlu", "Slay the Spire": "Aşırı Olumlu", "Vampire Survivors": "Aşırı Olumlu",
+"Subnautica": "Aşırı Olumlu", "Outer Wilds": "Aşırı Olumlu", "Valheim": "Aşırı Olumlu", "It Takes Two": "Aşırı Olumlu",
+"Elden Ring": "Çok Olumlu", "Cyberpunk 2077": "Çok Olumlu", "Red Dead Redemption 2": "Çok Olumlu",
+"Grand Theft Auto V": "Çok Olumlu"
+};
+(function () {
+  "use strict";
+
+  /* ---------- Veriyi çöz ---------- */
+  function a(s) { return s.split(""); }
+  var FILMLER = FILM_RAW.map(function (r) {
+    var p = r.split("|");
+    return { t: p[0], y: +p[1], dk: +p[2], mood: a(p[3]), dunya: a(p[4]), kimle: a(p[5]), ulke: a(p[6]), tempo: a(p[7]), anim: a(p[8]), d: p[9] };
+  });
+  var OYUNLAR = OYUN_RAW.map(function (r) {
+    var p = r.split("|");
+    return { t: p[0], y: +p[1], tur: a(p[2]), tempo: a(p[3]), kimle: a(p[4]), sure: a(p[5]), dunya: a(p[6]), zorluk: a(p[7]), plat: a(p[8]), d: p[9] };
+  });
+  var ALBUMLER = MUZIK_RAW.map(function (r) {
+    var p = r.split("|");
+    return { a: p[0], t: p[1], y: +p[2], tur: a(p[3]), his: a(p[4]), an: a(p[5]), dil: a(p[6]), ritim: a(p[7]), vokal: a(p[8]), pop: a(p[9]), d: p[10] };
+  });
+
+  var GTUR = { a: "Aksiyon ve macera", r: "Rol yapma", s: "Strateji", m: "Simülasyon ve yapım", p: "Bulmaca ve platform", y: "Yarış, spor ve parti", n: "Nişancı", k: "Korku" };
+  var PLAT = { p: "PC", k: "Konsol", m: "Mobil" };
+  var MTUR = { p: "Pop", r: "Rock", m: "Metal", h: "Hip hop", b: "R&B ve soul", e: "Elektronik", c: "Caz", k: "Klasik ve enstrümantal", f: "Folk" };
+
+  /* ---------- Sorular (her kategoride 8, en önemlisi başta) ---------- */
+  function opt(v, t, r) { return { v: v, t: t, r: r || "" }; }
+  var ANY = opt("any", "Fark etmez", "");
+
+  var CATS = {
+    oyun: {
+      id: "oyun", ad: "Oyun", sub: "Bu akşam ne oynasam?", birim: "oyun", items: OYUNLAR,
+      soru: [
+        { id: "kimle", q: "Kiminle oynayacaksın?", opts: [opt("t", "Tek başıma", "Tek kişilik oynanır"), opt("c", "Birlikte, aynı yerde ya da online", "Birlikte oynanır"), ANY] },
+        { id: "tempo", q: "Nasıl bir tempo istiyorsun?", opts: [opt("a", "Hızlı, refleks isteyen", "Hızlı tempolu"), opt("s", "Sakin ve rahatlatıcı", "Sakin"), opt("d", "Düşündüren, hikâyesi ya da stratejisi olan", "Düşündürücü"), ANY] },
+        { id: "plat", q: "Hangi platformda oynayacaksın?", opts: [opt("p", "PC", "PC'de var"), opt("k", "Konsol (PlayStation, Xbox, Switch)", "Konsolda var"), opt("m", "Mobil", "Mobilde var"), ANY] },
+        { id: "tur", q: "Hangi tür?", opts: [opt("a", "Aksiyon ve macera", "Aksiyon ve macera"), opt("r", "Rol yapma", "Rol yapma"), opt("s", "Strateji", "Strateji"), opt("m", "Simülasyon ve yapım", "Simülasyon ve yapım"), opt("p", "Bulmaca ve platform", "Bulmaca ve platform"), opt("y", "Yarış, spor ve parti", "Yarış, spor ve parti"), opt("n", "Nişancı", "Nişancı"), opt("k", "Korku", "Korku"), ANY] },
+        { id: "sure", q: "Ne kadar süre ayıracaksın?", opts: [opt("k", "Kısa oturumlar, yarım saat gibi", "Kısa oturuma uygun"), opt("u", "Saatlerce dalarım", "Uzun süre oyalar"), ANY] },
+        { id: "dunya", q: "Nasıl bir dünya olsun?", opts: [opt("f", "Fantastik ya da bilim kurgu", "Fantastik dünya"), opt("g", "Gerçekçi", "Gerçekçi dünya"), opt("s", "Renkli ve sevimli", "Renkli ve sevimli"), ANY] },
+        { id: "zorluk", q: "Ne kadar zorlansın?", opts: [opt("r", "Rahat olsun, strese girmeyeyim", "Rahat oynanır"), opt("z", "Meydan okusun", "Zorlayıcı"), ANY] },
+        { id: "donem", q: "Hangi dönemden olsun?", opts: [opt("e", "2012 ve öncesi", "2012 ve öncesi"), opt("o", "2013–2019", "2013–2019"), opt("n", "2020 ve sonrası", "2020 sonrası"), ANY] }
+      ]
+    },
+    muzik: {
+      id: "muzik", ad: "Müzik", sub: "Kulaklığa ne takılsa?", birim: "albüm", items: ALBUMLER,
+      soru: [
+        { id: "his", q: "Ruh halin nasıl?", opts: [opt("n", "Neşeli", "Neşeli"), opt("h", "Hüzünlü, duygusal", "Hüzünlü"), opt("s", "Sakin, dingin", "Sakin"), opt("k", "Öfkeli ya da sert bir şey lazım", "Sert ve öfkeli"), ANY] },
+        { id: "an", q: "Şu an ne yapıyorsun?", opts: [opt("o", "Çalışıyorum, odaklanmam lazım", "Odaklanmaya uygun"), opt("y", "Yoldayım", "Yolculukta iyi gider"), opt("d", "Dinleniyorum", "Dinlenmek için"), opt("e", "Enerjiye ihtiyacım var", "Enerji verir"), opt("p", "Arkadaşlarla bir aradayım", "Ortamda çalınır"), ANY] },
+        { id: "tur", q: "Hangi tür?", opts: [opt("p", "Pop", "Pop"), opt("r", "Rock", "Rock"), opt("m", "Metal", "Metal"), opt("h", "Hip hop", "Hip hop"), opt("b", "R&B ve soul", "R&B ve soul"), opt("e", "Elektronik", "Elektronik"), opt("c", "Caz ve blues", "Caz"), opt("k", "Klasik ve enstrümantal", "Klasik ve enstrümantal"), opt("f", "Folk ve akustik", "Folk"), ANY] },
+        { id: "dil", q: "Hangi dilde?", opts: [opt("t", "Türkçe", "Türkçe"), opt("y", "Yabancı dil", "Yabancı dil"), opt("s", "Sözsüz", "Sözsüz"), ANY] },
+        { id: "donem", q: "Hangi dönemden olsun?", opts: [opt("e", "1989 ve öncesi", "1989 ve öncesi"), opt("o", "1990–2009", "1990–2009"), opt("n", "2010 sonrası", "2010 sonrası"), ANY] },
+        { id: "ritim", q: "Ritim nasıl olsun?", opts: [opt("y", "Yavaş, salınan", "Yavaş ritim"), opt("o", "Orta tempo", "Orta tempo"), opt("h", "Hızlı, kafa sallatan", "Hızlı ritim"), ANY] },
+        { id: "vokal", q: "Kimin sesi?", opts: [opt("k", "Kadın vokal", "Kadın vokal"), opt("e", "Erkek vokal", "Erkek vokal"), opt("g", "Grup ya da karma", "Karma vokal"), ANY] },
+        { id: "pop", q: "Tanıdık mı, keşfetmelik mi?", opts: [opt("p", "Herkesin bildiği bir klasik", "Bilinen klasik"), opt("k", "Daha az bilinen, keşfetmelik", "Keşfetmelik"), ANY] }
+      ]
+    },
+    film: {
+      id: "film", ad: "Film", sub: "Bu gece ne izlesem?", birim: "film", items: FILMLER,
+      soru: [
+        { id: "mood", q: "Nasıl hissetmek istiyorsun?", opts: [opt("g", "Güleyim, eğleneyim", "Güldürür"), opt("h", "Heyecanlanayım, ekrana kilitleneyim", "Heyecanlı"), opt("d", "Düşüneyim, sonra da aklımda kalsın", "Düşündürür"), opt("u", "Duygulanayım", "Duygusal"), ANY] },
+        { id: "dunya", q: "Nasıl bir dünyada geçsin?", opts: [opt("r", "Gerçeğe yakın, hayatın içinden", "Gerçeğe yakın"), opt("y", "Hayal gücü, bilim kurgu, fantastik", "Hayal dünyası"), opt("s", "Suç, gizem ve gerilim", "Suç ve gizem"), ANY] },
+        { id: "kimle", q: "Kiminle izleyeceksin?", opts: [opt("t", "Tek başıma", "Tek başına iyi gider"), opt("c", "Partnerimle", "İkili izlemeye uygun"), opt("k", "Arkadaşlarım ya da ailemle", "Kalabalığa uygun"), ANY] },
+        { id: "sure", q: "Ne kadar vaktin var?", opts: [opt("k", "Kısa olsun, en fazla 1 sa 50 dk", "Kısa sürer"), opt("o", "2 saat civarı iyi", "Orta uzunlukta"), opt("u", "Uzun olsun, 2 sa 20 dk üstü", "Uzun soluklu"), ANY] },
+        { id: "donem", q: "Hangi dönemden olsun?", opts: [opt("e", "Eski olsun, 1999 ve öncesi", "1999 ve öncesi"), opt("y", "2000–2014 arası", "2000–2014 arası"), opt("n", "Yeni olsun, 2015 sonrası", "2015 sonrası"), ANY] },
+        { id: "ulke", q: "Nerenin yapımı olsun?", opts: [opt("t", "Türk yapımı", "Türk yapımı"), opt("a", "Hollywood", "Hollywood"), opt("d", "Avrupa, Asya ve diğer ülkeler", "Başka ülke yapımı"), ANY] },
+        { id: "tempo", q: "Akışı nasıl olsun?", opts: [opt("h", "Hızlı aksın, sıkılmayayım", "Hızlı akar"), opt("y", "Yavaş ve atmosferik olsun", "Yavaş ve atmosferik"), ANY] },
+        { id: "anim", q: "Animasyon ister misin?", opts: [opt("e", "Animasyon", "Animasyon"), opt("n", "Gerçek oyuncular", "Gerçek oyuncular"), ANY] }
+      ]
+    }
+  };
+  var ORDER = ["oyun", "muzik", "film"];
+  var CAPT = { 3: "hızlı", 4: "kısa", 5: "dengeli", 6: "ayrıntılı", 7: "çok ayrıntılı", 8: "en isabetli" };
+  var COUNTS = [3, 4, 5, 6, 7, 8];
+
+  /* ---------- Eşleştirme ---------- */
+  function vals(cid, it, qid) {
+    if (qid === "donem") {
+      if (cid === "film") return [it.y <= 1999 ? "e" : it.y <= 2014 ? "y" : "n"];
+      if (cid === "oyun") return [it.y <= 2012 ? "e" : it.y <= 2019 ? "o" : "n"];
+      return [it.y <= 1989 ? "e" : it.y <= 2009 ? "o" : "n"];
+    }
+    if (cid === "film" && qid === "sure") return [it.dk <= 110 ? "k" : it.dk <= 140 ? "o" : "u"];
+    return it[qid] || [];
+  }
+
+  function rank(cid, qs, ans) {
+    var c = CATS[cid], n = 0;
+    ans.forEach(function (o) { if (o && o.v !== "any") n++; });
+    var rows = c.items.map(function (it) {
+      var m = 0, why = [];
+      qs.forEach(function (q, k) {
+        var o = ans[k];
+        if (!o || o.v === "any") return;
+        if (vals(cid, it, q.id).indexOf(o.v) !== -1) { m++; why.push(o.r); }
+      });
+      return { it: it, m: m, why: why, r: Math.random() };
+    });
+    rows.sort(function (x, y) { return y.m - x.m || x.r - y.r; });
+    return { rows: rows, n: n };
+  }
+
+  /* ---------- Yardımcılar ---------- */
+  function h(tag, props) {
+    var e = document.createElement(tag);
+    props = props || {};
+    Object.keys(props).forEach(function (k) {
+      var v = props[k];
+      if (k === "class") e.className = v;
+      else if (k === "text") e.textContent = v;
+      else if (k.indexOf("on") === 0) e.addEventListener(k.slice(2), v);
+      else if (v !== false && v != null) e.setAttribute(k, v);
+    });
+    for (var i = 2; i < arguments.length; i++) {
+      [].concat(arguments[i]).forEach(function (kid) {
+        if (kid == null) return;
+        e.append(kid.nodeType ? kid : document.createTextNode(kid));
+      });
+    }
+    return e;
+  }
+  function $(id) { return document.getElementById(id); }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function sure(dk) { return Math.floor(dk / 60) + " sa " + (dk % 60) + " dk"; }
+  function enc(s) { return encodeURIComponent(s); }
+
+  function meta(cid, it) {
+    if (cid === "film") return it.y + " · " + sure(it.dk) + (it.anim[0] === "e" ? " · Animasyon" : "") + (IMDB[it.t] ? " · IMDb ≈ " + IMDB[it.t].toFixed(1) : "");
+    if (cid === "oyun") return it.y + " · " + GTUR[it.tur[0]] + " · " + it.plat.map(function (p) { return PLAT[p]; }).join(", ") + (STEAM[it.t] ? " · Steam ≈ " + STEAM[it.t] : "");
+    return it.a + " · " + it.y + " · " + it.tur.map(function (t) { return MTUR[t]; }).join(" / ");
+  }
+  function link(cid, it) {
+    if (cid === "film") return { href: "https://www.google.com/search?q=" + enc(it.t + " " + it.y + " film nerede izlenir"), text: "Nerede izlenir? →" };
+    if (cid === "oyun") return { href: "https://www.google.com/search?q=" + enc(it.t + " oyun"), text: "Platformlar ve fiyat →" };
+    return { href: "https://www.youtube.com/results?search_query=" + enc(it.a + " " + it.t), text: "Dinle →" };
+  }
+
+  /* Canlı puan: yalnızca sunucu sürümünde (window.LIVE_API tanımlıysa) çalışır */
+  function enrich(cid, it, el) {
+    if (!window.LIVE_API || !window.fetch) return;
+    var u = window.LIVE_API + "?cat=" + cid + "&q=" + enc(it.t) + "&year=" + it.y + (cid === "muzik" ? "&artist=" + enc(it.a) : "");
+    fetch(u).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.label) { el.textContent = "Canlı veri: " + d.label; el.hidden = false; }
+    }).catch(function () {});
+  }
+
+  /* ---------- Durum ve ekranlar ---------- */
+  var S = { cat: null, count: 5, i: 0, qs: [], ans: [], rows: [], n: 0, shown: 5 };
+  var screens = ["home", "setup", "quiz", "result"];
+
+  function show(name, focusId) {
+    screens.forEach(function (s) { $(s).hidden = s !== name; });
+    window.scrollTo(0, 0);
+    var f = $(focusId);
+    if (f) f.focus({ preventScroll: true });
+  }
+  function tagFor(el, c) {
+    el.style.setProperty("--c", "var(--" + c.id + ")");
+    el.replaceChildren(h("i"), c.ad);
+  }
+
+  function renderHome() {
+    var box = $("cats");
+    clear(box);
+    ORDER.forEach(function (id) {
+      var c = CATS[id];
+      box.append(h("button", { class: "cat " + id, type: "button", onclick: function () { showSetup(id); } },
+        h("span", {}, h("span", { class: "name", text: c.ad }), h("span", { class: "sub", text: c.sub })),
+        h("span", { class: "foot" }, h("span", { text: c.items.length + " " + c.birim }), h("span", { class: "arrow", "aria-hidden": "true", text: "→" }))
+      ));
+    });
+    $("note").textContent = "Öneriler elle seçilmiş bir listeden gelir: " + CATS.oyun.items.length + " oyun, " + CATS.muzik.items.length + " albüm, " + CATS.film.items.length + " film. Liste popüler, ödüllü ve sevilen yapımları kapsar. Dünyadaki her başlık içinde değildir.";
+  }
+
+  function showSetup(id) {
+    if (id) S.cat = id;
+    var c = CATS[S.cat];
+    tagFor($("stag"), c);
+    var box = $("counts");
+    clear(box);
+    COUNTS.forEach(function (n) {
+      box.append(h("button", { class: "cnt", type: "button", onclick: function () { begin(n); } },
+        h("b", { text: String(n) }),
+        h("span", { text: "soru · " + CAPT[n] })));
+    });
+    show("setup", "stitle");
+  }
+
+  function begin(n) {
+    S.count = n;
+    S.qs = CATS[S.cat].soru.slice(0, n);
+    S.i = 0; S.ans = [];
+    renderQuiz();
+    show("quiz", "qq");
+  }
+
+  function renderQuiz() {
+    var c = CATS[S.cat], ques = S.qs[S.i];
+    tagFor($("qtag"), c);
+    $("qcount").textContent = (S.i + 1) + " / " + S.qs.length;
+    clear($("progress"));
+    S.qs.forEach(function (_, k) { $("progress").append(h("span", { class: "seg" + (k < S.i ? " done" : k === S.i ? " now" : "") })); });
+    var body = $("qbody");
+    clear(body);
+    var cur = S.ans[S.i];
+    body.append(h("div", { class: "rise" },
+      h("h2", { id: "qq", tabindex: "-1", text: ques.q }),
+      h("div", { class: "opts", role: "group", "aria-label": ques.q },
+        ques.opts.map(function (o, k) {
+          return h("button", { class: "opt" + (cur && cur.v === o.v ? " on" : ""), type: "button", onclick: function () { pick(o); } },
+            h("span", { class: "key", "aria-hidden": "true", text: String(k + 1) }),
+            h("span", { text: o.t }));
+        }))
+    ));
+  }
+
+  function pick(o) {
+    S.ans[S.i] = o;
+    if (S.i < S.qs.length - 1) { S.i++; renderQuiz(); $("qq").focus({ preventScroll: true }); }
+    else finish();
+  }
+
+  function goHome() { show("home", "home-title"); }
+  function goBack() {
+    if (S.i > 0) { S.i--; renderQuiz(); $("qq").focus({ preventScroll: true }); }
+    else showSetup();
+  }
+
+  function finish() {
+    var r = rank(S.cat, S.qs, S.ans);
+    S.rows = r.rows; S.n = r.n; S.shown = 5;
+    var c = CATS[S.cat];
+    tagFor($("rtag"), c);
+    clear($("picked"));
+    S.ans.forEach(function (o) { if (o.v !== "any") $("picked").append(h("li", { text: o.t })); });
+    var w = $("warn");
+    if (S.n === 0) { w.hidden = false; w.textContent = "Her soruya “fark etmez” dedin, o yüzden listeden rastgele seçtim."; }
+    else if (S.rows[0].m < S.n) { w.hidden = false; w.textContent = "Bütün cevaplarına birden uyan bir seçenek listede yok. En yakın olanlar bunlar."; }
+    else w.hidden = true;
+    $("rnote").hidden = S.cat !== "film";
+    renderList();
+    show("result", "rtitle");
+  }
+
+  function renderList() {
+    var box = $("list"), cid = S.cat;
+    clear(box);
+    S.rows.slice(0, S.shown).forEach(function (row, k) {
+      var it = row.it, lk = link(cid, it);
+      var pct = S.n ? Math.round(row.m / S.n * 100) : null;
+      var live = h("p", { class: "live", hidden: "" });
+      enrich(cid, it, live);
+      box.append(h("li", { class: "res" },
+        h("div", { class: "rank", "aria-hidden": "true", text: String(k + 1) }),
+        h("div", {},
+          h("div", { class: "head" },
+            h("div", {}, h("h3", { text: it.t }), h("p", { class: "meta", text: meta(cid, it) })),
+            pct == null ? null : h("div", { class: "pct" }, h("b", { text: pct + "%" }), h("span", { text: "uyum" }), h("div", { class: "bar" }, h("i", { style: "width:" + pct + "%" })))
+          ),
+          live,
+          h("p", { class: "desc", text: it.d }),
+          row.why.length ? h("ul", { class: "why" }, row.why.map(function (x) { return h("li", { text: x }); })) : null,
+          h("a", { class: "find", href: lk.href, target: "_blank", rel: "noopener noreferrer", text: lk.text })
+        )
+      ));
+    });
+    $("more").hidden = S.shown >= S.rows.length;
+  }
+
+  /* ---------- Olaylar ---------- */
+  $("brand").addEventListener("click", goHome);
+  $("sback").addEventListener("click", goHome);
+  $("back").addEventListener("click", goBack);
+  $("more").addEventListener("click", function () { S.shown = Math.min(S.shown + 5, S.rows.length); renderList(); });
+  $("edit").addEventListener("click", function () { S.i = 0; renderQuiz(); show("quiz", "qq"); });
+  $("recount").addEventListener("click", function () { showSetup(); });
+  $("restart").addEventListener("click", goHome);
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var n = parseInt(e.key, 10);
+    if (isNaN(n)) return;
+    if (!$("setup").hidden) { if (n >= 3 && n <= 8) begin(n); return; }
+    if (!$("quiz").hidden) {
+      var ques = S.qs[S.i];
+      if (n >= 1 && n <= ques.opts.length) pick(ques.opts[n - 1]);
+    }
+  });
+
+  renderHome();
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
+
+</body>
+</html>
